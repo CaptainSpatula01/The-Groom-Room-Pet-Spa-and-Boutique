@@ -2,8 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using groomroom.Api.Data;
 using groomroom.Api.Features.Pets;
-
-namespace groomroom.Controllers
+namespace groomroom.Controllers;
 
 [Route("api/pets")]
 [ApiController]
