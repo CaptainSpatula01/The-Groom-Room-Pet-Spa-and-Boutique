@@ -1,21 +1,20 @@
-﻿using System.Data.Entity;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
+﻿using System.Data;
+using System.Reflection;
+using groomroom.Entities;
+using System.Reflection.Emit;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+namespace LearningStarter.Data;
 
-namespace MVC5App.Models
+public sealed class DataContext : IdentityDbContext<User, Role, int>
 {
-    public class RDSContext : DataContext
+    public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
-        public RDSContext()
-          : base(GetRDSConnectionString())
-        {
-        }
+    }
 
-        public static RDSContext Create()
-        {
-            return new RDSContext();
-        }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DataContext).GetTypeInfo().Assembly);
     }
 }
