@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using groomroom.Api.Data;
-using groomroom.Api.Features.Appointments;
+using groomroom;
+using groomroom.Entities;
 
 namespace groomroom.Api.Controllers;
 

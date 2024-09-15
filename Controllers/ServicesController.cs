@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using groomroom.Api.Data;
-using groomroom.Api.Features.Services;
+using groomroom.Data;
+using groomroom.Entities;
 
 namespace groomroom.Controllers
 {

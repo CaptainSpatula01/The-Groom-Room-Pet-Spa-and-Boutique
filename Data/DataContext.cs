@@ -4,7 +4,7 @@ using groomroom.Entities;
 using System.Reflection.Emit;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-namespace LearningStarter.Data;
+namespace groomroom.Data;
 
 public sealed class DataContext : IdentityDbContext<User, Role, int>
 {
