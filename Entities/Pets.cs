@@ -1,8 +1,5 @@
-﻿using groomroom.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
 
 namespace groomroom.Entities
 {
@@ -13,6 +10,7 @@ namespace groomroom.Entities
         public required string Breed { get; set; }
         public int Size { get; set; }
         public int UserId { get; set; }
+        public User User { get; set; }
     }
     public class PetDto
     {
@@ -20,7 +18,8 @@ namespace groomroom.Entities
         public required string Name { get; set; }
         public required string Breed { get; set; }
         public int Size { get; set; }
-        public int OwnerId { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; }
     }
 
     public class PetEntityConfiguration : IEntityTypeConfiguration<Pets>

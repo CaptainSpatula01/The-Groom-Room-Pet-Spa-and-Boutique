@@ -1,9 +1,7 @@
 ﻿//This is for users
-using groomroom.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
 namespace groomroom.Entities;
 
 public class User : IdentityUser<int>
@@ -24,6 +22,7 @@ public class UserCreateDto
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }
+    public string Password { get; set; }
 
     public List<UserRole> UserRoles { get; set; } = new();
 
@@ -39,6 +38,7 @@ public class UserUpdateDto
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }
+    public string Password { get; set; }
 
     public List<UserRole> UserRoles { get; set; } = new();
 
@@ -75,6 +75,8 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<User>
             .IsRequired();
 
         builder.Property(x => x.Email)
+            .IsRequired();
+        builder.Property(x => x.PasswordHash)
             .IsRequired();
     }
 }

@@ -1,62 +1,63 @@
-﻿using System.Linq;
-using System.Security.Claims;
-using groomroom.Data;
+﻿using groomroom.Data;
 using groomroom.Entities;
 using IdentityModel;
-using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
-namespace LearningStarter.Services;
-
-public interface IAuthenticationService
+namespace LearningStarter.Services
 {
-    User GetLoggedInUser();
-}
-
-public class AuthenticationService : IAuthenticationService
-{
-    private readonly DataContext _context;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public AuthenticationService(
-        DataContext context,
-        IHttpContextAccessor httpContextAccessor)
+    public interface IAuthenticationService
     {
-        _context = context;
-        _httpContextAccessor = httpContextAccessor;
+        User GetLoggedInUser();
     }
 
-    public User GetLoggedInUser()
+    public class AuthenticationService : IAuthenticationService
     {
-        if (!IsUserLoggedIn())
-            return null;
+        private readonly DataContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        var id = RequestingUser.FindFirstValue(JwtClaimTypes.Subject).SafeParseInt();
-
-        return id == null
-            ? null
-            : _context.Users.SingleOrDefault(x => x.Id == id.Value);
-    }
-
-    private ClaimsPrincipal RequestingUser
-    {
-        get
+        public AuthenticationService(
+            DataContext context,
+            IHttpContextAccessor httpContextAccessor)
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            var identity = httpContext?.User.Identity;
+            _context = context;
+            _httpContextAccessor = httpContextAccessor;
+        }
 
-            if (identity == null)
-            {
+        public User GetLoggedInUser()
+        {
+            if (!IsUserLoggedIn())
                 return null;
+
+            var idClaim = RequestingUser.FindFirstValue(JwtClaimTypes.Subject);
+            if (int.TryParse(idClaim, out var id))
+            {
+                return _context.Users.SingleOrDefault(x => x.Id == id);
             }
 
-            return !identity.IsAuthenticated
-                ? null
-                : httpContext.User;
+            return null;
         }
-    }
 
-    private bool IsUserLoggedIn()
-    {
-        return _httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
+        private ClaimsPrincipal RequestingUser
+        {
+            get
+            {
+                var httpContext = _httpContextAccessor.HttpContext;
+                var identity = httpContext?.User.Identity;
+
+                if (identity == null)
+                {
+                    return null;
+                }
+
+                return !identity.IsAuthenticated
+                    ? null
+                    : httpContext.User;
+            }
+        }
+
+        private bool IsUserLoggedIn()
+        {
+            return _httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
+        }
     }
 }
