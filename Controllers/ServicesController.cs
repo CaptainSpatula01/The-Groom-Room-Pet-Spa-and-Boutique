@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using groomroom.Data;
+﻿using groomroom.Data;
 using groomroom.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace groomroom.Controllers
 {
@@ -117,3 +117,4 @@ namespace groomroom.Controllers
                 });
         }
     }
+}

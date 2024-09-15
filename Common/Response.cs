@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace groomroom.Common;
+﻿namespace groomroom.Common;
 
 public class Response
 {

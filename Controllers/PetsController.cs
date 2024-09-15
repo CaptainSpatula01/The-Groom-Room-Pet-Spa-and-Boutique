@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using groomroom.Data;
+﻿using groomroom.Data;
 using groomroom.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace groomroom.Controllers
 {
@@ -10,13 +10,13 @@ namespace groomroom.Controllers
     [ApiController]
     public class PetsController : ControllerBase
     {
-        private readonly DbSet<Pet> pets;
+        private readonly DbSet<Pets> pets;
         private readonly DataContext dataContext;
 
         public PetsController(DataContext dataContext)
         {
             this.dataContext = dataContext;
-            pets = dataContext.Set<Pet>();
+            pets = dataContext.Set<Pets>();
         }
 
         [HttpGet]
@@ -46,7 +46,7 @@ namespace groomroom.Controllers
                 return BadRequest();
             }
 
-            var pet = new Pet
+            var pet = new Pets
             {
                 Name = dto.Name,
                 Breed = dto.Breed,
@@ -113,7 +113,7 @@ namespace groomroom.Controllers
                    string.IsNullOrWhiteSpace(dto.Breed);
         }
 
-        private static IQueryable<PetDto> GetPetDtos(IQueryable<Pet> pets)
+        private static IQueryable<PetDto> GetPetDtos(IQueryable<Pets> pets)
         {
             return pets
                 .Select(x => new PetDto

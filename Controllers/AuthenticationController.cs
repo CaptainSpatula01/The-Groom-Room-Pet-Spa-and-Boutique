@@ -1,7 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using groomroom.Common;
 using groomroom.Entities;
-using groomroom.Common;
-using groomroom.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,16 +11,13 @@ namespace groomroom.Controllers;
 [Route("/api")]
 public class AuthenticationController : ControllerBase
 {
-    private readonly IAuthenticationService _authenticationService;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
 
     public AuthenticationController(
-        IAuthenticationService authenticationService,
         UserManager<User> userManager,
         SignInManager<User> signInManager)
     {
-        _authenticationService = authenticationService;
         _userManager = userManager;
         _signInManager = signInManager;
     }
@@ -66,23 +61,26 @@ public class AuthenticationController : ControllerBase
 
     [Authorize]
     [HttpGet("get-current-user")]
-    public IActionResult GetLoggedInUser()
+    public async Task<IActionResult> GetLoggedInUser()
     {
         var response = new Response();
-        var user = _authenticationService.GetLoggedInUser();
+        var user = await _userManager.GetUserAsync(HttpContext.User);
 
         if (user == null)
         {
-            response.AddError(string.Empty, "There was an issue getting the logged in user.");
+            response.AddError(string.Empty, "There was an issue getting the logged-in user.");
             return NotFound(response);
         }
 
         var userGetDto = new UserGetDto
         {
             Id = user.Id,
+            UserName = user.UserName,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            UserName = user.UserName,
+            Email = user.Email,
+            UserRoles = user.UserRoles,
+            Pets = user.Pets
         };
 
         response.Data = userGetDto;
