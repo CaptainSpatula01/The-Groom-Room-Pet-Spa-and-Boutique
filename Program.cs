@@ -1,12 +1,22 @@
+using groomroom.Data;
+using Microsoft.EntityFrameworkCore;
+
+
 var builder = WebApplication.CreateBuilder(args);
-
+var services = builder.Services;
 // Add services to the container.
-builder.Services.AddControllers();
+services.AddControllers();
 
-builder.Services.AddEndpointsApiExplorer(); 
-builder.Services.AddSwaggerGen();
+services.AddEndpointsApiExplorer(); 
+services.AddSwaggerGen();
+
+services.AddScoped<DataContext>();
+
+
+services.AddDbContext<DataContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 
