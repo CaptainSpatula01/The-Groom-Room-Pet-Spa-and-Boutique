@@ -1,20 +1,23 @@
-﻿using System;
-using System.Linq;
-using groomroom.Common;
+﻿using groomroom.Common;
 using groomroom.Data;
 using groomroom.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace groomroom.Controllers
+namespace LearningStarter.Controllers
 {
     [ApiController]
-    [Route("api/users")]
+    [Route("api/Users")]
     public class UsersController : ControllerBase
     {
         private readonly DataContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public UsersController(DataContext context) {
+        public UsersController(DataContext context,
+            UserManager<User> userManager)
+        {
             _context = context;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -29,27 +32,29 @@ namespace groomroom.Controllers
                     Id = x.Id,
                     FirstName = x.FirstName,
                     LastName = x.LastName,
-                    Username = x.Username,
-                    Email = x.Email,
-                    DateCreated = x.DateCreated,
-                    IsDeleted = x.IsDeleted,
-                })
-                .ToList();
-
+                    UserName = x.UserName,
+                    Pets = x.Pets.Select(p => new Pets
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Breed = p.Breed,
+                        Size = p.Size
+                    }).ToList()
+                }).ToList();
             return Ok(response);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{Id}")]
         public IActionResult GetById(
-            [FromRoute] int id)
+            [FromRoute] int Id)
         {
             var response = new Response();
 
-            var user = _context.Users.FirstOrDefault(x => x.Id == id);
+            var user = _context.Users.FirstOrDefault(x => x.Id == Id);
 
             if (user == null)
             {
-                response.AddError("id", "There was a problem finding the user.");
+                response.AddError("Id", "There was a problem finding the user.");
                 return NotFound(response);
             }
 
@@ -58,10 +63,14 @@ namespace groomroom.Controllers
                 Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Username = user.Username,
-                Email = user.Email,
-                DateCreated = user.DateCreated,
-                IsDeleted = user.IsDeleted,
+                UserName = user.UserName,
+                Pets = user.Pets.Select(p => new Pets
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Breed = p.Breed,
+                    Size = p.Size
+                }).ToList()
             };
 
             response.Data = userGetDto;
@@ -70,47 +79,29 @@ namespace groomroom.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(
+        public async Task<IActionResult> Create(
             [FromBody] UserCreateDto userCreateDto)
         {
             var response = new Response();
 
-            var userNameAlreadyExists = _context
-                    .Users.Any(x => x.Username == userCreateDto.Username);
-
-            var emailAlreadyExists = _context
-                    .Users.Any(x => x.Email == userCreateDto.Email);
-
-            if (string.IsNullOrEmpty(userCreateDto.FirstName.Trim()))
+            if (string.IsNullOrEmpty(userCreateDto.FirstName))
             {
                 response.AddError("firstName", "First name cannot be empty.");
             }
 
-            if (string.IsNullOrEmpty(userCreateDto.LastName.Trim()))
+            if (string.IsNullOrEmpty(userCreateDto.LastName))
             {
                 response.AddError("lastName", "Last name cannot be empty.");
             }
 
-            if (string.IsNullOrEmpty(userCreateDto.Username.Trim()))
+            if (string.IsNullOrEmpty(userCreateDto.UserName))
             {
                 response.AddError("userName", "User name cannot be empty.");
             }
 
-            if (string.IsNullOrEmpty(userCreateDto.Password.Trim()))
+            if (string.IsNullOrEmpty(userCreateDto.Password))
             {
                 response.AddError("password", "Password cannot be empty.");
-            }
-            if (string.IsNullOrEmpty(userCreateDto.Email.Trim()))
-            {
-                response.AddError("email", "Email cannot be empty.");
-            }
-            if (userNameAlreadyExists)
-            {
-                response.AddError("username", "Username already in use.");
-            }
-            if (emailAlreadyExists)
-            {
-                response.AddError("email", "Email already in use");
             }
 
             if (response.HasErrors)
@@ -122,13 +113,12 @@ namespace groomroom.Controllers
             {
                 FirstName = userCreateDto.FirstName,
                 LastName = userCreateDto.LastName,
-                Username = userCreateDto.Username,
-                Password = userCreateDto.Password,
-                Email = userCreateDto.Email,
-                DateCreated = DateTimeOffset.Now
+                UserName = userCreateDto.UserName,
+                Email = userCreateDto.Email
             };
 
-            _context.Users.Add(userToCreate);
+            await _userManager.CreateAsync(userToCreate, userCreateDto.Password);
+            await _userManager.AddToRoleAsync(userToCreate, "Admin");
             _context.SaveChanges();
 
             var userGetDto = new UserGetDto
@@ -136,10 +126,7 @@ namespace groomroom.Controllers
                 Id = userToCreate.Id,
                 FirstName = userToCreate.FirstName,
                 LastName = userToCreate.LastName,
-                Username = userToCreate.Username,
-                Email = userToCreate.Email,
-                DateCreated = DateTimeOffset.Now,
-
+                UserName = userToCreate.UserName
             };
 
             response.Data = userGetDto;
@@ -147,59 +134,86 @@ namespace groomroom.Controllers
             return Created("", response);
         }
 
-        [HttpPut("{id}")]
+        [HttpPost("{UserId}/Pets")]
+        public IActionResult AddPetToUser(int UserId, [FromBody] PetDto petDto)
+        {
+            var response = new Response();
+
+            var user = _context.Users.FirstOrDefault(x => x.Id == UserId);
+            if (user == null)
+            {
+                response.AddError("UserId", "User not found.");
+                return NotFound(response);
+            }
+
+            var pet = new Pets
+            {
+                Name = petDto.Name,
+                Breed = petDto.Breed,
+                Size = petDto.Size,
+                User = user
+            };
+            _context.Pets.Add(pet);
+            _context.SaveChanges();
+
+            var userGetDto = new UserGetDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserName = user.UserName,
+                Pets = user.Pets.Select(p => new Pets
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Breed = p.Breed,
+                    Size = p.Size
+                }).ToList()
+            };
+
+            response.Data = userGetDto;
+            return Ok(response);
+        }
+
+        [HttpPut("{Id}")]
         public IActionResult Edit(
-            [FromRoute] int id, 
+            [FromRoute] int Id,
             [FromBody] UserUpdateDto userUpdateDto)
         {
             var response = new Response();
-            
-            var userNameAlreadyExists = _context
-                    .Users.Any(x => x.Username == userUpdateDto.Username && !(x.Id == id));
-
-            var emailAlreadyExists = _context
-                    .Users.Any(x => x.Email == userUpdateDto.Email && !(x.Id == id));
 
             if (userUpdateDto == null)
             {
-                response.AddError("id", "There was a problem editing the user.");
+                response.AddError("Id", "There was a problem editing the user.");
                 return NotFound(response);
             }
-            
-            var userToEdit = _context.Users.FirstOrDefault(x => x.Id == id);
+
+            var userToEdit = _context.Users.FirstOrDefault(x => x.Id == Id);
 
             if (userToEdit == null)
             {
-                response.AddError("id", "Could not find user to edit.");
+                response.AddError("Id", "Could not find user to edit.");
                 return NotFound(response);
             }
 
-            if (string.IsNullOrEmpty(userUpdateDto.FirstName.Trim()))
+            if (string.IsNullOrEmpty(userUpdateDto.FirstName))
             {
                 response.AddError("firstName", "First name cannot be empty.");
             }
 
-            if (string.IsNullOrEmpty(userUpdateDto.LastName.Trim()))
+            if (string.IsNullOrEmpty(userUpdateDto.LastName))
             {
                 response.AddError("lastName", "Last name cannot be empty.");
             }
 
-            if (string.IsNullOrEmpty(userUpdateDto.Username.Trim()))
+            if (string.IsNullOrEmpty(userUpdateDto.UserName))
             {
                 response.AddError("userName", "User name cannot be empty.");
             }
 
-            if(string.IsNullOrEmpty(userUpdateDto.Email.Trim()))
+            if (string.IsNullOrEmpty(userUpdateDto.Password))
             {
-                response.AddError("email", "Email cannot be empty.");
-            }
-            if (userNameAlreadyExists)
-            {
-                response.AddError("username", "Username already in use.");
-            }
-            if (emailAlreadyExists)
-            {
-                response.AddError("email", "Email already in use");
+                response.AddError("password", "Password cannot be empty.");
             }
 
             if (response.HasErrors)
@@ -209,8 +223,7 @@ namespace groomroom.Controllers
 
             userToEdit.FirstName = userUpdateDto.FirstName;
             userToEdit.LastName = userUpdateDto.LastName;
-            userToEdit.Username = userUpdateDto.Username;
-            userToEdit.Email = userUpdateDto.Email;
+            userToEdit.UserName = userUpdateDto.UserName;
 
             _context.SaveChanges();
 
@@ -219,34 +232,29 @@ namespace groomroom.Controllers
                 Id = userToEdit.Id,
                 FirstName = userToEdit.FirstName,
                 LastName = userToEdit.LastName,
-                Username = userToEdit.Username,
-                Email = userToEdit.Email,
-                DateCreated = userToEdit.DateCreated,
-                IsDeleted = userToEdit.IsDeleted,
+                UserName = userToEdit.UserName,
             };
 
             response.Data = userGetDto;
-
             return Ok(response);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [HttpDelete("{Id}")]
+        public IActionResult Delete(int Id)
         {
             var response = new Response();
 
-            var user = _context.Users.FirstOrDefault(x => x.Id == id);
+            var user = _context.Users.FirstOrDefault(x => x.Id == Id);
 
             if (user == null)
             {
-                response.AddError("id", "There was a problem deleting the user.");
+                response.AddError("Id", "There was a problem deleting the user.");
                 return NotFound(response);
             }
 
             _context.Users.Remove(user);
             _context.SaveChanges();
 
-            response.Data = true;
             return Ok(response);
         }
     }

@@ -1,16 +1,21 @@
-﻿using System.Data;
-using System.Reflection;
-using groomroom.Entities;
-using System.Reflection.Emit;
+﻿using groomroom.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-namespace LearningStarter.Data;
+using System.Reflection;
+namespace groomroom.Data;
 
 public sealed class DataContext : IdentityDbContext<User, Role, int>
 {
     public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
     }
+
+    public DbSet<Pets> Pets { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<Service> Services { get; set; }
+    public DbSet<Appointment> Appointments { get; set; }
+    public DbSet<UserRole> userRoles { get; set; }
+    public DbSet<Role> Roles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

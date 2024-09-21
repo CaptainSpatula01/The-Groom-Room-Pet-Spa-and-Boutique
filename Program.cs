@@ -1,12 +1,35 @@
+using groomroom.Data;
+using Microsoft.EntityFrameworkCore;
+
+
 var builder = WebApplication.CreateBuilder(args);
-
+var services = builder.Services;
 // Add services to the container.
+services.AddControllers();
 
-builder.Services.AddControllers();
+services.AddEndpointsApiExplorer(); 
+services.AddSwaggerGen();
+
+services.AddScoped<DataContext>();
+
+
+services.AddDbContext<DataContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        // options.RoutePrefix = string.Empty; // Uncomment this line to serve Swagger UI at the app's root
+    });
+}
 
 app.UseHttpsRedirection();
 
