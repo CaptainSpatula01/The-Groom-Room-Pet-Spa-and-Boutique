@@ -24,9 +24,9 @@ public class UserCreateDto
     public string Email { get; set; }
     public string Password { get; set; }
 
-    public List<UserRole> UserRoles { get; set; } = new();
+    public List<int> RoleIds { get; set; } = new();
 
-    public List<Pets>? Pets { get; set; }
+    public List<PetCreateDto> Pets { get; set; } = new();
 
 
 }
@@ -56,6 +56,13 @@ public class UserGetDto
     public List<UserRole> UserRoles { get; set; } = new();
 
     public List<Pets>? Pets { get; set; }
+}
+
+public class PetCreateDto
+{
+    public string Name { get; set; }
+    public string Breed { get; set; }
+    public int Size { get; set; }
 }
 
 public class UserEntityConfiguration : IEntityTypeConfiguration<User>

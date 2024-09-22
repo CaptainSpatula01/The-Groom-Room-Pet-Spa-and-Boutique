@@ -117,9 +117,27 @@ namespace LearningStarter.Controllers
                 Email = userCreateDto.Email
             };
 
-            await _userManager.CreateAsync(userToCreate, userCreateDto.Password);
-            await _userManager.AddToRoleAsync(userToCreate, "Admin");
-            _context.SaveChanges();
+            var result = await _userManager.CreateAsync(userToCreate, userCreateDto.Password);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    response.AddError("createUser", error.Description);
+                }
+                return BadRequest(response);
+            }
+
+            var roleResult = await _userManager.AddToRoleAsync(userToCreate, "User");
+
+            if (!roleResult.Succeeded)
+            {
+                foreach (var error in roleResult.Errors)
+                {
+                    response.AddError("roleAssignment", error.Description);
+                }
+                return BadRequest(response);
+            }
 
             var userGetDto = new UserGetDto
             {
