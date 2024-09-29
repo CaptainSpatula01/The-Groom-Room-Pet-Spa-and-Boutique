@@ -1,5 +1,6 @@
 using groomroom.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,7 @@ services.AddControllers();
 
 services.AddEndpointsApiExplorer(); 
 services.AddSwaggerGen();
+services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 services.AddScoped<DataContext>();
 
@@ -17,6 +19,7 @@ services.AddDbContext<DataContext>(option => option.UseSqlServer(builder.Configu
 
 var app = builder.Build();
 
+app.MapGet("/", () => "Hello From Lambda");
 
 // Configure the HTTP request pipeline.
 
