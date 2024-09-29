@@ -12,7 +12,7 @@ using groomroom.Data;
 namespace groomroom.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240922212058_SeedRoles")]
+    [Migration("20240929173237_SeedRoles")]
     partial class SeedRoles
     {
         /// <inheritdoc />
