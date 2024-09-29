@@ -9,13 +9,36 @@ namespace groomroom.Api.Controllers;
 [ApiController]
 public class AppointmentsController : ControllerBase
 {
-    private readonly DbSet<Appointment> appointments;
     private readonly DataContext dataContext;
+    private readonly DbSet<Appointment> appointments;
 
     public AppointmentsController(DataContext dataContext)
     {
         this.dataContext = dataContext;
         appointments = dataContext.Set<Appointment>();
+    }
+
+    [HttpGet]
+    [Route("user/{userId}")]
+    public ActionResult<IEnumerable<PetDto>> GetPetByUserId(int userId)
+    {
+        var userAppointments = appointments
+            .Where(p => p.UserId == userId)
+            .Select(x => new AppointmentDto
+            {
+                Id = x.Id,
+                Date = x.Date.ToString("MM-dd-yyyy"),
+                UserId = x.UserId,
+                ServiceId = x.ServiceId,
+                Total = x.Total
+            })
+            .ToList();
+            if (!userAppointments.Any())
+        {
+            return NotFound("No appointments found for user.");
+        }
+
+        return Ok(userAppointments);
     }
 
     [HttpGet]
