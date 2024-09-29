@@ -3,6 +3,7 @@ using groomroom.Data;
 using groomroom.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LearningStarter.Controllers
 {
@@ -21,36 +22,53 @@ namespace LearningStarter.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var response = new Response();
 
-            response.Data = _context
-                .Users
-                .Select(x => new UserGetDto
+            var users = await _context.Users
+                .Include(u => u.Pets)
+                .ToListAsync();
+            
+            var userDtos = new List<UserGetDto>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);               var userGetDto = new UserGetDto
                 {
-                    Id = x.Id,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    UserName = x.UserName,
-                    Pets = x.Pets.Select(p => new Pets
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Pets = user.Pets.Select(p => new Pets
                     {
                         Id = p.Id,
                         Name = p.Name,
                         Breed = p.Breed,
-                        Size = p.Size
-                    }).ToList()
-                }).ToList();
+                        Size = p.Size,
+                        UserId = p.UserId
+                    }).ToList(),
+                    UserRoles = roles.ToList() 
+                };
+
+                userDtos.Add(userGetDto);
+            }
+
+            response.Data = userDtos;
+
             return Ok(response);
         }
 
         [HttpGet("{Id}")]
-        public IActionResult GetById(
-            [FromRoute] int Id)
+        public async Task<IActionResult> GetById([FromRoute] int Id)
         {
             var response = new Response();
 
-            var user = _context.Users.FirstOrDefault(x => x.Id == Id);
+            var user = await _context.Users
+                .Include(u => u.Pets)
+                .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(x => x.Id == Id);
 
             if (user == null)
             {
@@ -58,19 +76,23 @@ namespace LearningStarter.Controllers
                 return NotFound(response);
             }
 
+            var roles = await _userManager.GetRolesAsync(user);
             var userGetDto = new UserGetDto
             {
                 Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 UserName = user.UserName,
+                Email = user.Email,
                 Pets = user.Pets.Select(p => new Pets
                 {
                     Id = p.Id,
                     Name = p.Name,
                     Breed = p.Breed,
-                    Size = p.Size
-                }).ToList()
+                    Size = p.Size,
+                    UserId = p.UserId
+                }).ToList(),
+                UserRoles = roles.ToList() 
             };
 
             response.Data = userGetDto;
@@ -79,29 +101,13 @@ namespace LearningStarter.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(
-            [FromBody] UserCreateDto userCreateDto)
+        public async Task<IActionResult> Create([FromBody] UserCreateDto userCreateDto)
         {
             var response = new Response();
 
             if (string.IsNullOrEmpty(userCreateDto.FirstName))
             {
                 response.AddError("firstName", "First name cannot be empty.");
-            }
-
-            if (string.IsNullOrEmpty(userCreateDto.LastName))
-            {
-                response.AddError("lastName", "Last name cannot be empty.");
-            }
-
-            if (string.IsNullOrEmpty(userCreateDto.UserName))
-            {
-                response.AddError("userName", "User name cannot be empty.");
-            }
-
-            if (string.IsNullOrEmpty(userCreateDto.Password))
-            {
-                response.AddError("password", "Password cannot be empty.");
             }
 
             if (response.HasErrors)
@@ -118,7 +124,6 @@ namespace LearningStarter.Controllers
             };
 
             var result = await _userManager.CreateAsync(userToCreate, userCreateDto.Password);
-
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
@@ -128,23 +133,15 @@ namespace LearningStarter.Controllers
                 return BadRequest(response);
             }
 
-            var roleResult = await _userManager.AddToRoleAsync(userToCreate, "User");
-
-            if (!roleResult.Succeeded)
-            {
-                foreach (var error in roleResult.Errors)
-                {
-                    response.AddError("roleAssignment", error.Description);
-                }
-                return BadRequest(response);
-            }
+            await _userManager.AddToRoleAsync(userToCreate, "User");
 
             var userGetDto = new UserGetDto
             {
                 Id = userToCreate.Id,
                 FirstName = userToCreate.FirstName,
                 LastName = userToCreate.LastName,
-                UserName = userToCreate.UserName
+                UserName = userToCreate.UserName,
+                Email = userToCreate.Email
             };
 
             response.Data = userGetDto;
@@ -153,11 +150,11 @@ namespace LearningStarter.Controllers
         }
 
         [HttpPost("{UserId}/Pets")]
-        public IActionResult AddPetToUser(int UserId, [FromBody] PetDto petDto)
+        public async Task<IActionResult> AddPetToUser(int UserId, [FromBody] PetDto petDto)
         {
             var response = new Response();
 
-            var user = _context.Users.FirstOrDefault(x => x.Id == UserId);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == UserId);
             if (user == null)
             {
                 response.AddError("UserId", "User not found.");
@@ -171,8 +168,9 @@ namespace LearningStarter.Controllers
                 Size = petDto.Size,
                 User = user
             };
-            _context.Pets.Add(pet);
-            _context.SaveChanges();
+
+            await _context.Pets.AddAsync(pet);
+            await _context.SaveChangesAsync();
 
             var userGetDto = new UserGetDto
             {
@@ -194,9 +192,7 @@ namespace LearningStarter.Controllers
         }
 
         [HttpPut("{Id}")]
-        public IActionResult Edit(
-            [FromRoute] int Id,
-            [FromBody] UserUpdateDto userUpdateDto)
+        public async Task<IActionResult> Edit([FromRoute] int Id, [FromBody] UserUpdateDto userUpdateDto)
         {
             var response = new Response();
 
@@ -206,8 +202,7 @@ namespace LearningStarter.Controllers
                 return NotFound(response);
             }
 
-            var userToEdit = _context.Users.FirstOrDefault(x => x.Id == Id);
-
+            var userToEdit = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
             if (userToEdit == null)
             {
                 response.AddError("Id", "Could not find user to edit.");
@@ -219,21 +214,6 @@ namespace LearningStarter.Controllers
                 response.AddError("firstName", "First name cannot be empty.");
             }
 
-            if (string.IsNullOrEmpty(userUpdateDto.LastName))
-            {
-                response.AddError("lastName", "Last name cannot be empty.");
-            }
-
-            if (string.IsNullOrEmpty(userUpdateDto.UserName))
-            {
-                response.AddError("userName", "User name cannot be empty.");
-            }
-
-            if (string.IsNullOrEmpty(userUpdateDto.Password))
-            {
-                response.AddError("password", "Password cannot be empty.");
-            }
-
             if (response.HasErrors)
             {
                 return BadRequest(response);
@@ -243,7 +223,7 @@ namespace LearningStarter.Controllers
             userToEdit.LastName = userUpdateDto.LastName;
             userToEdit.UserName = userUpdateDto.UserName;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             var userGetDto = new UserGetDto
             {
@@ -258,12 +238,11 @@ namespace LearningStarter.Controllers
         }
 
         [HttpDelete("{Id}")]
-        public IActionResult Delete(int Id)
+        public async Task<IActionResult> Delete(int Id)
         {
             var response = new Response();
 
-            var user = _context.Users.FirstOrDefault(x => x.Id == Id);
-
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
             if (user == null)
             {
                 response.AddError("Id", "There was a problem deleting the user.");
@@ -271,7 +250,7 @@ namespace LearningStarter.Controllers
             }
 
             _context.Users.Remove(user);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return Ok(response);
         }

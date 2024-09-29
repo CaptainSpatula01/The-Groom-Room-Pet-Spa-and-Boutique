@@ -4,142 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
         .dashboard {
-            padding: 20px;
+            font-family: Arial, sans-serif;
         }
-        .summary-cards {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .card {
-            flex: 1;
-            margin: 0 10px;
-        }
-        .chart-container {
-            margin-bottom: 20px;
+        .stat-item {
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-
-<div class="container dashboard">
-    <h1 class="mb-4">Admin Dashboard</h1>
-
-    <div class="summary-cards">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <h5 class="card-title">Total Users</h5>
-                <p class="card-text" id="total-users">Loading...</p>
+    <div class="dashboard">
+        <h2>Admin Dashboard</h2>
+        <div>
+            <div class="stat-item">
+                <h3>Total Users</h3>
+                <p id="total-users">0</p>
             </div>
-        </div>
-        <div class="card bg-success text-white">
-            <div class="card-body">
-                <h5 class="card-title">Total Appointments</h5>
-                <p class="card-text" id="total-appointments">Loading...</p>
-            </div>
-        </div>
-        <div class="card bg-warning text-dark">
-            <div class="card-body">
-                <h5 class="card-title">Pending Appointments</h5>
-                <p class="card-text" id="pending-appointments">Loading...</p>
+            <div class="stat-item">
+                <h3>Total Appointments</h3>
+                <p id="total-appointments">0</p>
             </div>
         </div>
     </div>
 
-    <div class="chart-container">
-        <canvas id="appointmentsChart"></canvas>
-    </div>
-
-    <h2>Recent Appointments</h2>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>User</th>
-                <th>Service</th>
-                <th>Date</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody id="appointments-table">
-            <!-- Appointment rows will be populated here -->
-        </tbody>
-    </table>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>
-<script>
-    async function loadDashboardData() {
-        const response = await fetch('/api/admin/dashboard/data');
-        const data = await response.json();
-
-        document.getElementById('total-users').textContent = data.TotalUsers;
-        document.getElementById('total-appointments').textContent = data.TotalAppointments;
-        document.getElementById('pending-appointments').textContent = data.PendingAppointments;
-
-        const appointmentsTable = document.getElementById('appointments-table');
-        data.RecentAppointments.forEach(appointment => {
-            const row = `<tr>
-                <td>${appointment.id}</td>
-                <td>${appointment.user}</td>
-                <td>${appointment.service}</td>
-                <td>${new Date(appointment.date).toLocaleString()}</td>
-                <td>${appointment.status}</td>
-            </tr>`;
-            appointmentsTable.insertAdjacentHTML('beforeend', row);
-        });
-
-        const ctx = document.getElementById('appointmentsChart').getContext('2d');
-        const appointmentsChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: data.AppointmentDates,
-                datasets: [{
-                    label: 'Appointments',
-                    data: data.AppointmentCounts,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 2,
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false
-                    }
-                },
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Date'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Number of Appointments'
-                        }
-                    }
+    <script>
+        fetch('/api/admin/dashboard-info')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
                 }
-            }
-        });
-    }
-
-    loadDashboardData();
-</script>
-
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('total-users').textContent = data.totalUsers;
+                document.getElementById('total-appointments').textContent = data.totalAppointments;
+            })
+            .catch(error => console.error('Error fetching dashboard data:', error));
+    </script>
 </body>
 </html>

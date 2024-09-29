@@ -6,15 +6,12 @@ namespace groomroom.Entities;
 
 public class User : IdentityUser<int>
 {
-    public string UserName { get; set; }
+    // public string UserName { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }
-
+    public List<Pets> Pets { get; set; } = new();
     public List<UserRole> UserRoles { get; set; } = new();
-
-    public List<Pets>? Pets { get; set; }
-
 }
 public class UserCreateDto
 {
@@ -23,26 +20,17 @@ public class UserCreateDto
     public string LastName { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
-
-    public List<int> RoleIds { get; set; } = new();
-
     public List<PetCreateDto> Pets { get; set; } = new();
-
-
+    public List<int> RoleIds { get; set; } = new();
 }
 
 public class UserUpdateDto
 {
-    public int Id { get; set; }
     public string UserName { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
-
-    public List<UserRole> UserRoles { get; set; } = new();
-
-    public List<Pets>? Pets { get; set; }
 }
 
 public class UserGetDto
@@ -52,10 +40,8 @@ public class UserGetDto
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }
-
-    public List<UserRole> UserRoles { get; set; } = new();
-
     public List<Pets>? Pets { get; set; }
+    public List<string> UserRoles { get; set; } = new();
 }
 
 public class PetCreateDto
@@ -75,15 +61,17 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.LastName)
             .IsRequired();
 
-        builder.Property(x => x.Email)
-            .IsRequired();
-
         builder.Property(x => x.UserName)
             .IsRequired();
 
         builder.Property(x => x.Email)
             .IsRequired();
+
         builder.Property(x => x.PasswordHash)
             .IsRequired();
+
+        builder.HasMany(u => u.Pets)
+            .WithOne(p => p.User)
+            .HasForeignKey(p => p.UserId);
     }
 }

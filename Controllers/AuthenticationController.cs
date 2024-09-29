@@ -79,8 +79,14 @@ public class AuthenticationController : ControllerBase
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
-            UserRoles = user.UserRoles,
-            Pets = user.Pets
+            UserRoles = user.UserRoles.Select(ur => ur.Role.Name).ToList(), // Extract role names
+            Pets = user.Pets.Select(p => new Pets
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Breed = p.Breed,
+                Size = p.Size
+            }).ToList()
         };
 
         response.Data = userGetDto;

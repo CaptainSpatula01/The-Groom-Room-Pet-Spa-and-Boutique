@@ -20,6 +20,30 @@ namespace groomroom.Controllers
         }
 
         [HttpGet]
+        [Route("user/{userId}")]
+        public ActionResult<IEnumerable<PetDto>> GetPetByUserId(int userId)
+        {
+            var userPets = pets
+                .Where(p => p.UserId == userId)
+                .Select(x => new PetDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Breed = x.Breed,
+                    Size = x.Size,
+                    UserId = x.UserId
+                })
+                .ToList();
+
+            if (!userPets.Any())
+            {
+                return NotFound("No pets found for user.");
+            }
+
+            return Ok(userPets);
+        }
+
+        [HttpGet]
         public IQueryable<PetDto> GetAllPets()
         {
             return GetPetDtos(pets);

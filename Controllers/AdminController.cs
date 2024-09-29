@@ -11,6 +11,7 @@ namespace LearningStarter.Controllers
 {
     [ApiController]
     [Route("api/Admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
@@ -28,11 +29,29 @@ namespace LearningStarter.Controllers
             return Ok(users);
         }
 
-        [HttpGet("users/{id}")]
-        public async Task<IActionResult> GetUserById(string Id)
+        [HttpGet("users/{Id}")]
+        public async Task<IActionResult> GetUserById(int Id)
         {
-            var user = await _userManager.FindByIdAsync(Id);
+            var user = await _userManager.Users
+                .Include(u => u.Pets)
+                .FirstOrDefaultAsync(u => u.Id == Id);
+            
             if (user == null) return NotFound(new { message = "User Not Found"});
+
+            var result = new
+            {
+                user.Id,
+                user.UserName,
+                user.Email,
+                Pets = user.Pets.Select(p => new
+                {
+                    p.Id,
+                    p.Name,
+                    p.Breed,
+                    p.Size
+                })
+            };
+
             return Ok(user);
         }
 
@@ -105,7 +124,7 @@ namespace LearningStarter.Controllers
             return Ok(new {message = $"Appointment {id} deleted successfully"});
         }
 
-        [HttpGet("dashboard/data")]
+        [HttpGet("dashboard")]
         public IActionResult GetDashboardData()
         {
             var dashboardData = new 
