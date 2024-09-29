@@ -23,6 +23,12 @@ public sealed class DataContext : IdentityDbContext<User, Role, int,
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        builder.Entity<Appointment>()
+            .HasOne(a => a.User)
+            .WithMany()
+            .HasForeignKey(a => a.UserId);
+
         builder.Entity<UserRole>(userRole =>
         {
             userRole.HasKey(ur => new {ur.UserId, ur.RoleId});

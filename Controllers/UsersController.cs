@@ -1,12 +1,14 @@
 ﻿using groomroom.Common;
 using groomroom.Data;
 using groomroom.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearningStarter.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/Users")]
     public class UsersController : ControllerBase
@@ -28,6 +30,7 @@ namespace LearningStarter.Controllers
 
             var users = await _context.Users
                 .Include(u => u.Pets)
+                .Include(u => u.Appointments)
                 .ToListAsync();
             
             var userDtos = new List<UserGetDto>();
@@ -48,6 +51,16 @@ namespace LearningStarter.Controllers
                         Size = p.Size,
                         UserId = p.UserId
                     }).ToList(),
+                    Appointments = user.Appointments.Select(a => new AppointmentDto
+                    {
+                        Date = a.Date.ToString("MM-dd-yyyy"),
+                        ServiceId = a.ServiceId,
+                        ServiceDescription = _context.Services 
+                            .Where(s => a.ServiceId.Contains(s.Id))
+                            .Select(s => s.Description)
+                            .ToList(),
+                        Total = a.Total,
+                    }).ToList(),
                     UserRoles = roles.ToList() 
                 };
 
@@ -59,16 +72,24 @@ namespace LearningStarter.Controllers
             return Ok(response);
         }
 
-        [HttpGet("{Id}")]
-        public async Task<IActionResult> GetById([FromRoute] int Id)
+        [HttpGet("me")]
+        public async Task<IActionResult> GetCurrentUser()
         {
             var response = new Response();
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                response.AddError("userId", "User is not logged in.");
+                return Unauthorized(response);
+            }
 
             var user = await _context.Users
                 .Include(u => u.Pets)
+                .Include(u => u.Appointments)
                 .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
-                .FirstOrDefaultAsync(x => x.Id == Id);
+                .FirstOrDefaultAsync(x => x.Id == int.Parse(userId));
 
             if (user == null)
             {
@@ -91,6 +112,16 @@ namespace LearningStarter.Controllers
                     Breed = p.Breed,
                     Size = p.Size,
                     UserId = p.UserId
+                }).ToList(),
+                Appointments = user.Appointments.Select(a => new AppointmentDto
+                {
+                    Date = a.Date.ToString("MM-dd-yyyy"),
+                    ServiceId = a.ServiceId,
+                    ServiceDescription = _context.Services 
+                        .Where(s => a.ServiceId.Contains(s.Id))
+                        .Select(s => s.Description)
+                        .ToList(),
+                    Total = a.Total,
                 }).ToList(),
                 UserRoles = roles.ToList() 
             };
@@ -149,12 +180,19 @@ namespace LearningStarter.Controllers
             return Created("", response);
         }
 
-        [HttpPost("{UserId}/Pets")]
-        public async Task<IActionResult> AddPetToUser(int UserId, [FromBody] PetDto petDto)
+        [HttpPost("add-pet")]
+        public async Task<IActionResult> AddPetToUser([FromBody] PetDto petDto)
         {
             var response = new Response();
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == UserId);
+            if (string.IsNullOrEmpty(userId))
+            {
+                response.AddError("userId", "User is not logged in.");
+                return Unauthorized(response);
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == int.Parse(userId));
             if (user == null)
             {
                 response.AddError("UserId", "User not found.");
@@ -166,7 +204,7 @@ namespace LearningStarter.Controllers
                 Name = petDto.Name,
                 Breed = petDto.Breed,
                 Size = petDto.Size,
-                User = user
+                UserId = int.Parse(userId),
             };
 
             await _context.Pets.AddAsync(pet);
@@ -191,37 +229,101 @@ namespace LearningStarter.Controllers
             return Ok(response);
         }
 
-        [HttpPut("{Id}")]
-        public async Task<IActionResult> Edit([FromRoute] int Id, [FromBody] UserUpdateDto userUpdateDto)
+        [HttpPost("book-appointment")]
+        public async Task<IActionResult> BookAppointment([FromBody] AppointmentCreateDto appointmentCreateDto)
         {
             var response = new Response();
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            if (userUpdateDto == null)
+            if (string.IsNullOrEmpty(userId))
             {
-                response.AddError("Id", "There was a problem editing the user.");
+                response.AddError("userId", "User is not logged in.");
+                return Unauthorized(response);
+            }
+
+            if (appointmentCreateDto == null || string.IsNullOrEmpty(appointmentCreateDto.Date) || 
+                appointmentCreateDto.ServiceId == null || !appointmentCreateDto.ServiceId.Any() || 
+                appointmentCreateDto.ServiceId.Any(s => s <= 0))
+            {
+                response.AddError("appointment", "Invalid appointment details.");
+                return BadRequest(response);
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == int.Parse(userId));
+            if (user == null)
+            {
+                response.AddError("userId", "User not found.");
                 return NotFound(response);
             }
 
-            var userToEdit = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+            DateTime appointmentDate;
+            if (!DateTime.TryParseExact(appointmentCreateDto.Date, "MM-dd-yyyy", null, System.Globalization.DateTimeStyles.None, out appointmentDate))
+            {
+                response.AddError("date", "Invalid date format. Please use MM-dd-yyyy.");
+                return BadRequest(response);
+            }
+
+            var servicePrices = await _context.Services
+                .Where(s => appointmentCreateDto.ServiceId.Contains(s.Id))
+                .Select(s => s.Price)
+                .ToListAsync();
+
+            decimal total = servicePrices.Sum();
+
+            var appointment = new Appointment
+            {
+                Date = appointmentDate,
+                UserId = int.Parse(userId),
+                ServiceId = appointmentCreateDto.ServiceId,
+                Total = total,
+            };
+
+            await _context.Appointments.AddAsync(appointment);
+            await _context.SaveChangesAsync();
+
+            var appointmentResponse = new AppointmentDto
+            {
+                ServiceId = appointment.ServiceId,
+                Date = appointment.Date.ToString("MM-dd-yyyy")
+            };
+
+            response.Data = appointmentResponse;
+            return Ok(response);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Edit([FromBody] UserUpdateDto userUpdateDto)
+        {
+            var response = new Response();
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                response.AddError("userId", "User is not logged in.");
+                return Unauthorized(response);
+            }
+
+            var userToEdit = await _context.Users.FirstOrDefaultAsync(x => x.Id == int.Parse(userId));
             if (userToEdit == null)
             {
                 response.AddError("Id", "Could not find user to edit.");
                 return NotFound(response);
             }
 
-            if (string.IsNullOrEmpty(userUpdateDto.FirstName))
+            if (!string.IsNullOrEmpty(userUpdateDto.FirstName))
             {
-                response.AddError("firstName", "First name cannot be empty.");
+                userToEdit.FirstName = userUpdateDto.FirstName;
             }
 
-            if (response.HasErrors)
+            if (!string.IsNullOrEmpty(userUpdateDto.LastName))
             {
-                return BadRequest(response);
+                userToEdit.LastName = userUpdateDto.LastName;
             }
 
-            userToEdit.FirstName = userUpdateDto.FirstName;
-            userToEdit.LastName = userUpdateDto.LastName;
-            userToEdit.UserName = userUpdateDto.UserName;
+            if (!string.IsNullOrEmpty(userUpdateDto.UserName))
+            {
+                userToEdit.UserName = userUpdateDto.UserName;
+            }
 
             await _context.SaveChangesAsync();
 
@@ -237,12 +339,19 @@ namespace LearningStarter.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("{Id}")]
-        public async Task<IActionResult> Delete(int Id)
+        [HttpDelete]
+        public async Task<IActionResult> Delete()
         {
             var response = new Response();
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+            if (string.IsNullOrEmpty(userId))
+            {
+                response.AddError("userId", "User is not logged in.");
+                return Unauthorized(response);
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == int.Parse(userId));
             if (user == null)
             {
                 response.AddError("Id", "There was a problem deleting the user.");

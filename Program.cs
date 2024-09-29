@@ -14,11 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
 // Add services to the container.
-services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-    });
+services.AddControllers();
 
 services.AddDbContext<DataContext>(options => 
     options.UseSqlServer(

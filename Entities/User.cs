@@ -11,6 +11,7 @@ public class User : IdentityUser<int>
     public string LastName { get; set; }
     public string Email { get; set; }
     public List<Pets> Pets { get; set; } = new();
+    public List<Appointment> Appointments { get; set; } = new();
     public List<UserRole> UserRoles { get; set; } = new();
 }
 public class UserCreateDto
@@ -41,6 +42,7 @@ public class UserGetDto
     public string LastName { get; set; }
     public string Email { get; set; }
     public List<Pets>? Pets { get; set; }
+    public List<AppointmentDto> Appointments { get; set; }
     public List<string> UserRoles { get; set; } = new();
 }
 

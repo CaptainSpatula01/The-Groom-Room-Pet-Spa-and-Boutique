@@ -26,11 +26,8 @@ public class AppointmentsController : ControllerBase
             .Where(p => p.UserId == userId)
             .Select(x => new AppointmentDto
             {
-                Id = x.Id,
                 Date = x.Date.ToString("MM-dd-yyyy"),
-                UserId = x.UserId,
                 ServiceId = x.ServiceId,
-                Total = x.Total
             })
             .ToList();
             if (!userAppointments.Any())
@@ -61,32 +58,34 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<AppointmentDto> CreateAppointment(AppointmentDto dto)
+    public async Task<ActionResult<AppointmentDto>> CreateAppointmentAsync(AppointmentDto dto)
     {
         if (IsInvalid(dto))
         {
             return BadRequest();
         }
 
+        var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(currentUserId))
+        {
+            return Unauthorized("User is not authenticated.");
+        }
+
         var appointment = new Appointment
         {
             Date = DateTime.ParseExact(dto.Date, "MM-dd-yyyy", null),
-            UserId = dto.UserId,
+            UserId = int.Parse(currentUserId),
             ServiceId = dto.ServiceId,
-            Total = dto.Total
         };
-        appointments.Add(appointment);
+        await appointments.AddAsync(appointment);
+        await dataContext.SaveChangesAsync();
 
-        dataContext.SaveChanges();
-
-        dto.Id = appointment.Id;
-
-        return CreatedAtAction(nameof(GetAppointmentById), new { id = dto.Id }, dto);
+        return CreatedAtAction(nameof(GetAppointmentById), new { id = appointment.Id }, dto);
     }
 
     [HttpPut]
     [Route("{id}")]
-    public ActionResult<AppointmentDto> UpdateAppointment(int id, AppointmentDto dto)
+    public async Task<ActionResult<AppointmentDto>> UpdateAppointmentAsync(int id, AppointmentDto dto)
     {
         if (IsInvalid(dto))
         {
@@ -100,13 +99,9 @@ public class AppointmentsController : ControllerBase
         }
 
         appointment.Date = DateTime.ParseExact(dto.Date, "MM-dd-yyyy", null);
-        appointment.UserId = dto.UserId;
         appointment.ServiceId = dto.ServiceId;
-        appointment.Total = dto.Total;
 
-        dataContext.SaveChanges();
-
-        dto.Id = appointment.Id;
+        await dataContext.SaveChangesAsync();
 
         return Ok(dto);
     }
@@ -130,9 +125,7 @@ public class AppointmentsController : ControllerBase
 
     private static bool IsInvalid(AppointmentDto dto)
     {
-        return dto.UserId <= 0 ||
-               dto.ServiceId == null || dto.ServiceId.Count == 0 ||
-               dto.Total <= 0 ||
+        return dto.ServiceId == null || dto.ServiceId.Count == 0 ||
                !DateTime.TryParseExact(dto.Date, "MM-dd-yyyy", null, System.Globalization.DateTimeStyles.None, out _);
     }
 
@@ -141,11 +134,8 @@ public class AppointmentsController : ControllerBase
         return appointments
             .Select(x => new AppointmentDto
             {
-                Id = x.Id,
                 Date = x.Date.ToString("MM-dd-yyyy"),
-                UserId = x.UserId,
                 ServiceId = x.ServiceId,
-                Total = x.Total
             });
     }
 }
