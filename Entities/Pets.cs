@@ -19,7 +19,6 @@ namespace groomroom.Entities
         public required string Breed { get; set; }
         public int Size { get; set; }
         public int UserId { get; set; }
-        public User User { get; set; }
     }
 
     public class PetEntityConfiguration : IEntityTypeConfiguration<Pets>
