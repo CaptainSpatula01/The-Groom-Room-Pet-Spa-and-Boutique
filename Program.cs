@@ -2,7 +2,6 @@ using groomroom.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 // Add services to the container.
@@ -15,7 +14,7 @@ services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 services.AddScoped<DataContext>();
 
 
-services.AddDbContext<DataContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+services.AddDbContext<DataContext>(option => option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
