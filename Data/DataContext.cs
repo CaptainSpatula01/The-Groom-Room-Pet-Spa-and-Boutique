@@ -25,7 +25,7 @@ public sealed class DataContext : IdentityDbContext<User, Role, int,
         base.OnModelCreating(builder);
         builder.Entity<UserRole>(userRole =>
         {
-            userRole.HasKey(ur => new {ur.UserId, ur.RoleId});
+            userRole.HasKey(ur => new { ur.UserId, ur.RoleId });
 
             userRole.HasOne(ur => ur.User)
                 .WithMany(u => u.UserRoles)

@@ -12,8 +12,8 @@ using groomroom.Data;
 namespace groomroom.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240922160158_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240930023122_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -94,28 +94,6 @@ namespace groomroom.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
-
-                    b.HasDiscriminator().HasValue("IdentityUserRole<int>");
-
-                    b.UseTphMappingStrategy();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
                     b.Property<int>("UserId")
@@ -187,7 +165,7 @@ namespace groomroom.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Pets", (string)null);
+                    b.ToTable("Pets");
                 });
 
             modelBuilder.Entity("groomroom.Entities.Role", b =>
@@ -237,7 +215,7 @@ namespace groomroom.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Services", (string)null);
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("groomroom.Entities.User", b =>
@@ -286,7 +264,6 @@ namespace groomroom.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
@@ -302,7 +279,6 @@ namespace groomroom.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -321,11 +297,17 @@ namespace groomroom.Migrations
 
             modelBuilder.Entity("groomroom.Entities.UserRole", b =>
                 {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUserRole<int>");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 
-                    b.HasDiscriminator().HasValue("UserRole");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -378,7 +360,7 @@ namespace groomroom.Migrations
             modelBuilder.Entity("groomroom.Entities.UserRole", b =>
                 {
                     b.HasOne("groomroom.Entities.Role", "Role")
-                        .WithMany("Users")
+                        .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -396,7 +378,7 @@ namespace groomroom.Migrations
 
             modelBuilder.Entity("groomroom.Entities.Role", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("groomroom.Entities.User", b =>

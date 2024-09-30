@@ -22,8 +22,12 @@ services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
     });
 
-services.AddDbContext<DataContext>(option => option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+services.AddDbContext<DataContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()
+    )
+);
 services.AddIdentity<User, Role>()
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();

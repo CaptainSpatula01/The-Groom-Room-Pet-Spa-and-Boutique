@@ -8,7 +8,7 @@ public class AdministratorSeedData
         var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 
-        string[] roleNames = {"Admin", "User"};
+        string[] roleNames = { "Admin", "User" };
         foreach (var roleName in roleNames)
         {
             var roleExist = await roleManager.RoleExistsAsync(roleName);
