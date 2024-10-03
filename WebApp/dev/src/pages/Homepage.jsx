@@ -4,6 +4,7 @@ import '../css/App.css';
 import ServicesPage from './ServicesPage';
 import LoginPage from './LoginPage';
 import SignUpPage from './SignupPage';
+import GalleryPage from './Gallerypage';
 
 function Homepage() {
   return (
@@ -17,6 +18,7 @@ function Homepage() {
         <div className="nav-links">
           <Link to="/">Home</Link>
           <Link to="/services">Services</Link>
+          <Link to="/gallery">Gallery</Link>
         </div>
         <div className="login">
           <Link to="/login">
@@ -32,6 +34,7 @@ function Homepage() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/booking" element={<Booking />} />
           <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/gallery" element={<GalleryPage />} />
         </Routes>
       </main>
     </>
