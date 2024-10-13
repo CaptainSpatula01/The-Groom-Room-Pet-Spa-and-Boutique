@@ -1,4 +1,4 @@
-import { Routes, Route, Link, Outlet } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import logo from "../assets/logo.png";
 import '../css/App.css';
 import ServicesPage from './ServicesPage';
