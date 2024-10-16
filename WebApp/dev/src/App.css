@@ -1,42 +1,135 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    background-color: #a19e9e;
+    color: #000;
   }
-  to {
-    transform: rotate(360deg);
+  
+  #root {
+    background-color: #d3d3d3;
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #000;
+    color: #fff;
+    z-index: 1000;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
+  
+  .logo {
+    flex: 1;
+  }
+  
+  .logo-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .logo img {
+    height: 40px;
+  }
+  
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    flex: 2;
+  }
+  
+  .nav-links a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 20px;
+    font-weight: bold;
+  }
+  
+  .nav-links a:hover {
+    text-decoration: underline;
+  }
+  
+  .login {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .login-button {
+    background-color: #fff;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-left: 10px;
+    border-radius: 5px;
+  }
+  
+  .login-button:hover {
+    background-color: #ccc;
+  }
+  
+  main {
+    padding: 80px 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    height: calc(100% - 80px);
+  }
+  
+  .home-container {
+    width: 100%;
+  }
+  
+  .header-container {
+    display: flex;
+    text-align: center;
+    padding: 20px 0;
+  }
+  
+  .about-us-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px;
+  }
+  
+  .about-us {
+    flex: 2;
+  }
+  
+  .logo-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .about-us img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .contact-container {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .contact-info {
+    text-align: right; /* Align text to the right */
+  }
+  
+  .contact-info p {
+    margin: 5px 0;
+  }

@@ -35,7 +35,8 @@ namespace LearningStarter.Controllers
             var userDtos = new List<UserGetDto>();
             foreach (var user in users)
             {
-                var roles = await _userManager.GetRolesAsync(user);               var userGetDto = new UserGetDto
+                var roles = await _userManager.GetRolesAsync(user);               
+                var userGetDto = new UserGetDto
                 {
                     Id = user.Id,
                     FirstName = user.FirstName,

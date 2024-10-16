@@ -1,11 +1,13 @@
 ﻿using groomroom.Data;
 using groomroom.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace groomroom.Controllers
 {
 
+    [Authorize]
     [Route("api/pets")]
     [ApiController]
     public class PetsController : ControllerBase
@@ -68,8 +70,9 @@ namespace groomroom.Controllers
                 return BadRequest();
             }
 
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             {
                 return Unauthorized("User is not authenticated.");
             }
@@ -79,7 +82,7 @@ namespace groomroom.Controllers
                 Name = dto.Name,
                 Breed = dto.Breed,
                 Size = dto.Size,
-                UserId = int.Parse(userId),
+                UserId = userId,
             };
             pets.Add(pet);
 

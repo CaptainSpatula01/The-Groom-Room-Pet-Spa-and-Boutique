@@ -132,6 +132,7 @@ namespace LearningStarter.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] UserCreateDto userCreateDto)
         {
             var response = new Response();
