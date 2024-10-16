@@ -23,64 +23,53 @@ namespace LearningStarter.Controllers
         }
 
         [HttpGet("users")]
-        public IActionResult ListUsers()
+        public async Task<IActionResult> ListUsers()
         {
-            var users = _userManager.Users.ToList();
-            return Ok(users);
-        }
+            var response = new Response();
 
-        [HttpGet("users/{Id}")]
-        public async Task<IActionResult> GetUserById(int Id)
-        {
-            var user = await _userManager.Users
+            var users = await _context.Users
                 .Include(u => u.Pets)
-                .FirstOrDefaultAsync(u => u.Id == Id);
+                .Include(u => u.Appointments)
+                .ToListAsync();
             
-            if (user == null) return NotFound(new { message = "User Not Found"});
-
-            var result = new
+            var userDtos = new List<UserGetDto>();
+            foreach (var user in users)
             {
-                user.Id,
-                user.UserName,
-                user.Email,
-                Pets = user.Pets.Select(p => new
+                var roles = await _userManager.GetRolesAsync(user);               
+                var userGetDto = new UserGetDto
                 {
-                    p.Id,
-                    p.Name,
-                    p.Breed,
-                    p.Size
-                })
-            };
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Pets = user.Pets.Select(p => new Pets
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Breed = p.Breed,
+                        Size = p.Size,
+                        UserId = p.UserId
+                    }).ToList(),
+                    Appointments = user.Appointments.Select(a => new AppointmentDto
+                    {
+                        Date = a.Date.ToString("MM-dd-yyyy"),
+                        ServiceId = a.ServiceId,
+                        ServiceDescription = _context.Services 
+                            .Where(s => a.ServiceId.Contains(s.Id))
+                            .Select(s => s.Description)
+                            .ToList(),
+                        Total = a.Total,
+                    }).ToList(),
+                    UserRoles = roles.ToList() 
+                };
 
-            return Ok(user);
-        }
+                userDtos.Add(userGetDto);
+            }
 
-        [HttpPost("users")]
-        public async Task<IActionResult> CreateUser([FromBody] UserCreateDto createUserDto)
-        {
-            var user = new User
-            {
-                UserName = createUserDto.UserName,
-                Email = createUserDto.Email
-            };
+            response.Data = userDtos;
 
-            var result = await _userManager.CreateAsync(user, createUserDto.Password);
-            if (result.Succeeded) return Ok(new { message = "User created successfully" });
-            return BadRequest(result.Errors);
-        }
-
-        [HttpPut("users/{id}")]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] UserUpdateDto updateUserDto)
-        {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound(new { message = "User not found" });
-
-            user.Email = updateUserDto.Email;
-            user.UserName = updateUserDto.UserName;
-
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded) return Ok(new { message = "User updated successfully" });
-            return BadRequest(result.Errors);
+            return Ok(response);
         }
 
         [HttpDelete("users/{id}")]
@@ -96,19 +85,23 @@ namespace LearningStarter.Controllers
         [HttpGet("appointments")]
         public async Task<IActionResult> ListAppointments()
         {
-            var appointments = await _context.Appointments.ToListAsync();
-            return Ok(appointments);
-        }
+            var appointments = await _context.Appointments
+                .Include(a => a.User)
+                .Include(a => a.Service)
+                .ToListAsync();
 
-        [HttpGet("appointments/{id}")]
-        public async Task<IActionResult> GetAppointmentById(int id)
-        {
-            var appointment = await _context.Appointments.FindAsync(id);
-            if(appointment == null)
+            var appointmentDtos = appointments.Select(a => new AppointmentDto
             {
-                return NotFound(new {message = "Appointment Not Found"});
-            }
-            return Ok(appointment);
+                Date = a.Date.ToString("MM-dd-yyyy"),
+                ServiceId = a.Service.Select(s => s.Id).ToList(),
+                ServiceDescription = a.Service.Select(s => s.Description).ToList(),
+                Total = a.Total,
+                UserId = a.User.Id,
+                UserName = a.User.FirstName + " " + a.User.LastName,
+                UserEmail = a.User.Email
+            }).ToList();
+
+            return Ok(appointmentDtos);
         }
 
         [HttpDelete("appointments/{id}")]

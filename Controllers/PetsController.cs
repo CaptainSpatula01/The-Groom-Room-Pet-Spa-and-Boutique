@@ -1,11 +1,13 @@
 ﻿using groomroom.Data;
 using groomroom.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace groomroom.Controllers
 {
 
+    [Authorize]
     [Route("api/pets")]
     [ApiController]
     public class PetsController : ControllerBase
@@ -27,11 +29,9 @@ namespace groomroom.Controllers
                 .Where(p => p.UserId == userId)
                 .Select(x => new PetDto
                 {
-                    Id = x.Id,
                     Name = x.Name,
                     Breed = x.Breed,
                     Size = x.Size,
-                    UserId = x.UserId
                 })
                 .ToList();
 
@@ -70,20 +70,32 @@ namespace groomroom.Controllers
                 return BadRequest();
             }
 
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized("User is not authenticated.");
+            }
+
             var pet = new Pets
             {
                 Name = dto.Name,
                 Breed = dto.Breed,
                 Size = dto.Size,
-                UserId = dto.UserId
+                UserId = userId,
             };
             pets.Add(pet);
 
             dataContext.SaveChanges();
 
-            dto.Id = pet.Id;
+            var responseDto = new PetDto
+            {
+                Name = pet.Name,
+                Breed = pet.Breed,
+                Size = pet.Size
+            };
 
-            return CreatedAtAction(nameof(GetPetById), new { id = dto.Id }, dto);
+            return CreatedAtAction(nameof(GetPetById), new { id = pet.Id }, responseDto);
         }
 
         [HttpPut]
@@ -104,11 +116,15 @@ namespace groomroom.Controllers
             pet.Name = dto.Name;
             pet.Breed = dto.Breed;
             pet.Size = dto.Size;
-            pet.UserId = dto.UserId;
 
             dataContext.SaveChanges();
 
-            dto.Id = pet.Id;
+            var responseDto = new PetDto
+            {
+                Name = pet.Name,
+                Breed = pet.Breed,
+                Size = pet.Size
+            };
 
             return Ok(dto);
         }
@@ -142,11 +158,9 @@ namespace groomroom.Controllers
             return pets
                 .Select(x => new PetDto
                 {
-                    Id = x.Id,
                     Name = x.Name,
                     Breed = x.Breed,
                     Size = x.Size,
-                    UserId = x.UserId
                 });
         }
     }

@@ -1,45 +1,45 @@
 .services-container {
-  padding: 20px;
-  align-self: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  background-color: #a19e9e; 
-  border-radius: 8px;
-}
-
-  
-  .service-category {
-    margin: 20px 0;
+    padding: 20px;
+    align-self: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background-color: #a19e9e; 
+    border-radius: 8px;
   }
   
-  .service-category h2 {
-    margin-bottom: 10px;
-  }
-  
-  .service-category ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .service-category li {
-    margin: 5px 0;
-  }
-  
-  .booking-button-container {
-    margin-top: 20px;
-    text-align: center;
-  }
-  
-  .navigate-button {
-    background-color: #000;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .navigate-button:hover {
-    background-color: #fff;
-    color: #000;
-  }
-  
+    
+    .service-category {
+      margin: 20px 0;
+    }
+    
+    .service-category h2 {
+      margin-bottom: 10px;
+    }
+    
+    .service-category ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    
+    .service-category li {
+      margin: 5px 0;
+    }
+    
+    .booking-button-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+    
+    .navigate-button {
+      background-color: #000;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    
+    .navigate-button:hover {
+      background-color: #fff;
+      color: #000;
+    }
+    

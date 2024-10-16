@@ -1,12 +1,87 @@
+import { useState, useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import logo from "../assets/logo.png";
-import '../css/App.css';
+import '../App.css';
 import ServicesPage from './ServicesPage';
 import LoginPage from './LoginPage';
 import SignUpPage from './SignupPage';
-import GalleryPage from './Gallerypage';
 
 function Homepage() {
+  const [userMessage, setUserMessage] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+      getCurrentUser();
+    }
+  }, []);
+
+  const handleLogin = async () => {
+    try {
+      const user = await login(username, password);
+      setUserMessage(`Successfully logged in as: ${user.data.username}`);
+      localStorage.setItem('token', user.data.token);
+      localStorage.setItem('user', JSON.stringify(user.data.username));
+      setIsLoggedIn(true);
+      setCurrentUser(user.data);
+      getCurrentUser();
+    } catch (error) {
+      setUserMessage(error.message);
+    }
+  };
+
+  const handleLogout = async () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    setCurrentUser(null);
+    setUserMessage('Logged out successfully.');
+  };
+
+  const getCurrentUser = async () => {
+    const token = localStorage.getItem('token');
+    console.log("Token: ", token);
+    
+    if (!token) {
+      setUserMessage("You need to log in first.");
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5094/api/get-current-user', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        console.error("Error Response: ", errorResponse);
+        throw new Error('Failed to fetch current user');
+    }
+
+      const data = await response.json();
+      console.log("Data received:", data);
+
+      if (data && data.data) {
+        setCurrentUser(data.data);
+        setUserMessage(`Current logged-in user: ${data.data.userName}`);
+      } else {
+        setUserMessage('No user found or not logged in.');
+      }
+    } catch (error) {
+      setUserMessage(error.message);
+    }
+  };
+
   return (
     <>
       <nav className="navbar">
@@ -18,24 +93,58 @@ function Homepage() {
         <div className="nav-links">
           <Link to="/">Home</Link>
           <Link to="/services">Services</Link>
-          <Link to="/gallery">Gallery</Link>
         </div>
         <div className="login">
-          <Link to="/login">
-            <button className="login-button">Log In</button>
-          </Link>
+            {isLoggedIn ? (
+                <button onClick={handleLogout} className="logout-button">Log Out</button>
+            ) : (
+                <>
+                    <Link to="/login">
+                        <button className="login-button">Log In</button>
+                    </Link>
+                    <Link to="/signup">
+                        <button className="signup-button">Sign Up</button>
+                    </Link>
+                </>
+            )}
         </div>
       </nav>
 
       <main>
+        <div>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button onClick={handleLogin} className="check-user-button">Test Login</button>
+        </div>
+        {userMessage && <p>{userMessage}</p>}
+
+        <button onClick={getCurrentUser} className="check-user-button">Get Current User</button>
+        {currentUser && (
+          <div>
+            <h3>Current User Details:</h3>
+            <p>Username: {currentUser.userName}</p>
+            <p>Email: {currentUser.email}</p>
+          </div>
+        )}
+
         <Routes>
           <Route path="/" element={<HomeContent />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/booking" element={<Booking />} />
           <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/gallery" element={<GalleryPage />} />
         </Routes>
+        {console.log("Current User in Homepage:", currentUser)}
       </main>
     </>
   );

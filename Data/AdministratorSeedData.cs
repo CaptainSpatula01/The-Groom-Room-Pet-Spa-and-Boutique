@@ -1,5 +1,6 @@
 using groomroom.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 public class AdministratorSeedData
 {
@@ -8,14 +9,22 @@ public class AdministratorSeedData
         var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 
-        string[] roleNames = {"Admin", "User"};
+        string[] roleNames = { "Admin", "User" };
+        
         foreach (var roleName in roleNames)
         {
             var roleExist = await roleManager.RoleExistsAsync(roleName);
             if (!roleExist)
             {
                 var role = new Role { Name = roleName };
-                await roleManager.CreateAsync(role);
+                var roleResult = await roleManager.CreateAsync(role);
+                if (!roleResult.Succeeded)
+                {
+                    foreach (var error in roleResult.Errors)
+                    {
+                        Console.WriteLine($"Role creation error: {error.Description}");
+                    }
+                }
             }
         }
 
@@ -30,8 +39,24 @@ public class AdministratorSeedData
                 FirstName = "Admin",
                 LastName = "User"
             };
-            await userManager.CreateAsync(adminUser, "SecurePassword123!");  // Ensure strong password
+
+            var createAdminResult = await userManager.CreateAsync(adminUser, "SecurePassword123!");
+            if (createAdminResult.Succeeded)
+            {
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+            }
+            else
+            {
+                // Handle user creation errors
+                foreach (var error in createAdminResult.Errors)
+                {
+                    Console.WriteLine($"User creation error: {error.Description}");
+                }
+            }
         }
-        await userManager.AddToRoleAsync(adminUser, "Admin");
+        else
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
     }
 }

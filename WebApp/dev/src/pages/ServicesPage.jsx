@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Button, Segment, Table } from 'semantic-ui-react';
 import { useNavigate } from 'react-router-dom';
-import '../css/services.css'; 
+import '../css/services.css';
 
 const ServicesPage = () => {
     const [services, setServices] = useState([]);
@@ -60,8 +60,8 @@ const ServicesPage = () => {
         return <div>{error}</div>; // show error
     }
 
-    return (
-        <div className="services-container">
+  return (
+    <div className="services-container">
             <div className="services-header">
                 <h1 className="page-title">Our Services</h1>
                 <div className="services-buttons">
@@ -74,8 +74,15 @@ const ServicesPage = () => {
                     >
                          Add Service
                     </Button>
-                </div>
-            </div>
+      </div>
+      <div className="service-category">
+        <h2>Medium Dogs</h2>
+        <ul>
+          {services.mediumDogs.map((service, index) => (
+            <li key={index}>{service}</li>
+          ))}
+        </ul>
+      </div>
 
             {services.length > 0 ? (
                 <Segment inverted>
@@ -122,7 +129,7 @@ const ServicesPage = () => {
                                         </Button>
                                     </Table.Cell>
                                 </Table.Row>
-                            ))}
+          ))}
                         </Table.Body>
                     </Table>
                 </Segment>
@@ -137,9 +144,9 @@ const ServicesPage = () => {
                 >
                     Home
                 </Button>
-            </div>
-        </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default ServicesPage;

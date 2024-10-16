@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using groomroom.Data;
 
@@ -11,9 +12,11 @@ using groomroom.Data;
 namespace groomroom.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240922212058_SeedRoles")]
+    partial class SeedRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -133,8 +136,6 @@ namespace groomroom.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Appointments");
                 });
 
@@ -205,9 +206,6 @@ namespace groomroom.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AppointmentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -216,8 +214,6 @@ namespace groomroom.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AppointmentId");
 
                     b.ToTable("Services");
                 });
@@ -307,19 +303,9 @@ namespace groomroom.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RoleId1")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId1")
-                        .HasColumnType("int");
-
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("RoleId1");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
@@ -360,17 +346,6 @@ namespace groomroom.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("groomroom.Entities.Appointment", b =>
-                {
-                    b.HasOne("groomroom.Entities.User", "User")
-                        .WithMany("Appointments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("groomroom.Entities.Pets", b =>
                 {
                     b.HasOne("groomroom.Entities.User", "User")
@@ -382,47 +357,23 @@ namespace groomroom.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("groomroom.Entities.Service", b =>
-                {
-                    b.HasOne("groomroom.Entities.Appointment", null)
-                        .WithMany("Service")
-                        .HasForeignKey("AppointmentId");
-                });
-
             modelBuilder.Entity("groomroom.Entities.UserRole", b =>
                 {
-                    b.HasOne("groomroom.Entities.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("groomroom.Entities.Role", "Role")
                         .WithMany("UserRoles")
-                        .HasForeignKey("RoleId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("groomroom.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("groomroom.Entities.User", "User")
                         .WithMany("UserRoles")
-                        .HasForeignKey("UserId1")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Role");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("groomroom.Entities.Appointment", b =>
-                {
-                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("groomroom.Entities.Role", b =>
@@ -432,8 +383,6 @@ namespace groomroom.Migrations
 
             modelBuilder.Entity("groomroom.Entities.User", b =>
                 {
-                    b.Navigation("Appointments");
-
                     b.Navigation("Pets");
 
                     b.Navigation("UserRoles");

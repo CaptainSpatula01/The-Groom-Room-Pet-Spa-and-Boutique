@@ -2,13 +2,7 @@ using System.Text;
 using groomroom.Data;
 using groomroom.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Writers;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -20,49 +14,8 @@ services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
     });
 
-services.AddDbContext<DataContext>(options => 
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()
-    )
-);
-
-services.AddIdentity<User, Role>()
-    .AddEntityFrameworkStores<DataContext>()
-    .AddDefaultTokenProviders();
-
 services.AddEndpointsApiExplorer(); 
-
-services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API V1", Version = "v1" });
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer",
-                },
-                Scheme = "oauth2",
-                Name = "Bearer",
-                In = ParameterLocation.Header,
-            },
-            new List<string>()
-        }
-    });
-});
+services.AddSwaggerGen();
 
 services.AddScoped<DataContext>();
 
@@ -96,6 +49,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

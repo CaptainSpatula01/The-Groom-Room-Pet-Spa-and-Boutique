@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        .dashboard {
+            font-family: Arial, sans-serif;
+        }
+        .stat-item {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h2>Admin Dashboard</h2>
+        <div>
+            <div class="stat-item">
+                <h3>Total Users</h3>
+                <p id="total-users">0</p>
+            </div>
+            <div class="stat-item">
+                <h3>Total Appointments</h3>
+                <p id="total-appointments">0</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        fetch('/api/admin/dashboard-info')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('total-users').textContent = data.totalUsers;
+                document.getElementById('total-appointments').textContent = data.totalAppointments;
+            })
+            .catch(error => console.error('Error fetching dashboard data:', error));
+    </script>
+</body>
+</html>
