@@ -8,8 +8,8 @@ namespace groomroom.Controllers
 {
 
     [Authorize]
-    [Route("api/pets")]
     [ApiController]
+    [Route("api/pets")]
     public class PetsController : ControllerBase
     {
         private readonly DbSet<Pets> pets;
@@ -70,7 +70,7 @@ namespace groomroom.Controllers
                 return BadRequest();
             }
 
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = User.FindFirst("UserId")?.Value;
             
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             {

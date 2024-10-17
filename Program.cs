@@ -51,6 +51,9 @@ services.AddAuthentication(options =>
     };
 });
 
+services.AddAuthorization();
+services.AddAuthentication();
+
 services.AddEndpointsApiExplorer(); 
 
 services.AddSwaggerGen(c =>
@@ -86,12 +89,11 @@ services.AddSwaggerGen(c =>
 
 services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
+    options.AddPolicy("AllowAll",
         builder => builder
-            .WithOrigins("http://localhost:5173")
+            .AllowAnyOrigin()
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials());
+            .AllowAnyMethod());
 });
 
 services.AddScoped<DataContext>();
@@ -126,7 +128,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

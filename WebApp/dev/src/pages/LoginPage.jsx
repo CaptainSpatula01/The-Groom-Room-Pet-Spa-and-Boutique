@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../api/login';
-import '../css/Login.css'; 
+import '../css/Login.css';
 
 const LoginPage = () => {
   const [userMessage, setUserMessage] = useState('');
@@ -12,6 +12,9 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Disable scrolling by adding class
+    document.body.classList.add('no-scroll');
+
     const token = localStorage.getItem('token');
     if (token) {
       setRedirectMessage('You are already logged in. Redirecting to the home page...');
@@ -19,6 +22,10 @@ const LoginPage = () => {
         navigate('/');
       }, 3000);
     }
+
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
   }, [navigate]);
 
   const handleSubmit = async (e) => {
@@ -30,7 +37,7 @@ const LoginPage = () => {
       localStorage.setItem('token', user.data.token);
       localStorage.setItem('user', JSON.stringify(user.data.username));
       setError(null);
-      navigate('/');
+      navigate('/user');
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Login failed, please check your credentials.';
       setUserMessage(errorMessage);
@@ -38,9 +45,13 @@ const LoginPage = () => {
     }
   };
 
+  const handleSignUp = () => {
+    navigate('/signup');
+  };
+
   return (
     <div className="login-container">
-      <h1>Login</h1>
+      <h1 className="login-title">Ready for that Spa Day?</h1>
       {redirectMessage && <p className="redirect-message">{redirectMessage}</p>}
       <form onSubmit={handleSubmit} className="form">
         <div className="form-group">
@@ -67,6 +78,7 @@ const LoginPage = () => {
         {userMessage && <p>{userMessage}</p>}
         <button type="submit" className="login-button">Log In</button>
       </form>
+      <button className="signup-button" onClick={handleSignUp}>Create Account</button>
     </div>
   );
 };

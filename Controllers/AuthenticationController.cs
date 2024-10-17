@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace groomroom.Controllers;
@@ -88,7 +89,8 @@ public class AuthenticationController : ControllerBase
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iss, "YourIssuer"),
                 new Claim(JwtRegisteredClaimNames.Aud, "YourAudience"),
-                new Claim("UserId", user.Id.ToString())
+                new Claim("UserId", user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ThisIsSuperSecretLongKeyPleaseFuckingWorkForTheLoveOfGod"));
@@ -115,9 +117,9 @@ public class AuthenticationController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetLoggedInUser()
     {
-        var userId = User.FindFirstValue("UserId");
+        var userIdClaim = User.FindFirstValue("UserId");
 
-        if (string.IsNullOrEmpty(userId))
+        if (string.IsNullOrEmpty(userIdClaim))
         {
             return BadRequest(new
             {
@@ -127,7 +129,21 @@ public class AuthenticationController : ControllerBase
             });
         }
 
-        var user = await _userManager.FindByIdAsync(userId);
+        if (!int.TryParse(userIdClaim, out int userId))
+        {
+            return BadRequest(new
+            {
+                data = (object)null,
+                errors = new[] { new { property = "", message = "User Id is not a valid integer." } },
+                hasErrors = true
+            });
+        }
+
+        var user = await _userManager.Users
+            .Include(u => u.Pets)
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null)
         {

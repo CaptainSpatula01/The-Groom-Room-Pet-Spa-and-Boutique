@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signUp } from '../api/signup';
 import '../css/SignUp.css';
@@ -13,6 +13,16 @@ const SignupPage = () => {
   const [userMessage, setUserMessage] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Disable scrolling by adding class
+    document.body.classList.add('no-scroll');
+
+    // Cleanup function to remove class on unmount
+    return () => {
+        document.body.classList.remove('no-scroll');
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +44,7 @@ const SignupPage = () => {
       localStorage.setItem('user', JSON.stringify(loginResponse.data.username));
       
       setError(null);
-      navigate('/');
+      navigate('/user');
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Sign up failed. Please try again.';
       setUserMessage(errorMessage);
@@ -42,9 +52,17 @@ const SignupPage = () => {
     }
   };
 
+  const handleLoginRedirect = () => {
+    navigate('/login'); // Navigate to login page
+  };
+
+  const handleCancel = () => {
+    navigate('/login'); // Navigate to another appropriate page
+  };
+
   return (
     <div className="signup-container">
-      <h1>Sign Up</h1>
+      <h1 className="signup-title">Create Your Account Here!</h1>
       {userMessage && <p>{userMessage}</p>}
       <form onSubmit={handleSubmit} className="form">
         <div className="form-group">
@@ -99,7 +117,9 @@ const SignupPage = () => {
         </div>
         {error && <p className="error">{error}</p>}
         <button type="submit" className="signup-button">Sign Up</button>
+        <button type="button" className="cancel-button" onClick={handleCancel}>Cancel</button>
       </form>
+      <button className="login-button" onClick={handleLoginRedirect}>Already have an account? Log In</button>
     </div>
   );
 };

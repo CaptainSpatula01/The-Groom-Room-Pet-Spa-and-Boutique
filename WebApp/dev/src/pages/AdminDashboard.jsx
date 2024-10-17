@@ -2,28 +2,50 @@ import React, { useEffect, useState } from 'react';
 
 const AdminDashboard = () => {
   const [totalUsers, setTotalUsers] = useState(0);
-  const [totalAppointments, setTotalAppointments] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch the total users and appointments from your API
     const fetchData = async () => {
-      const usersResponse = await fetch('/api/users'); // Adjust the endpoint as needed
-      const usersData = await usersResponse.json();
-      setTotalUsers(usersData.length); // Or however you count users
+        const token = localStorage.getItem('token');
+        try {
+            const usersResponse = await fetch('http://localhost:5094/api/users', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+            });
+        
+            if (!usersResponse.ok) {
+                throw new Error('Failed to fetch users.');
+            }
 
-      const appointmentsResponse = await fetch('/api/appointments'); // Adjust the endpoint as needed
-      const appointmentsData = await appointmentsResponse.json();
-      setTotalAppointments(appointmentsData.length); // Or however you count appointments
+            const usersData = await usersResponse.json();
+            console.log(usersData);
+            setTotalUsers(usersData.data.length);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     fetchData();
   }, []);
 
+  if (loading) {
+    return <h2>Loading...</h2>;
+  }
+
+  if (error) {
+    return <h2>Error: {error}</h2>; 
+  }
+
   return (
     <div>
       <h1>Admin Dashboard</h1>
       <p>Total Users: {totalUsers}</p>
-      <p>Total Appointments: {totalAppointments}</p>
     </div>
   );
 };

@@ -1,0 +1,13 @@
+.homepage-button {
+    width: 100%;
+    text-align: center;
+}
+
+.remove-button {
+    background-color: red;
+}
+
+.add-button {
+    background-color: rgb(59, 177, 203);
+    color: white;
+}
