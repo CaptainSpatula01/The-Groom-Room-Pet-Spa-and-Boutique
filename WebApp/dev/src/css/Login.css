@@ -1,66 +1,81 @@
 .login-container {
-    max-width: 1600px;
-    margin: 100px auto;
-    padding: 40px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    text-align: center;
-  }
-  
-  h1 {
-    margin-bottom: 20px;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-    width: 100%;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .login-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #000; 
-    color: #000000;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px; 
-  }
-  
-  .login-button:hover {
-    background-color: #444;
-  }
-  
-  .signup-button {
-    padding: 10px 20px;
-    background-color: #ccc;
-    color: #000;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-  }
-  
-  .signup-button:hover {
-    background-color: #bbb;
-  }
-  
+  max-width: 400px; /* Adjusted for a more compact layout */
+  margin: 100px auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 10px; /* Slightly larger border radius */
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2); /* Deeper shadow for depth */
+  text-align: center;
+}
+
+.login-title {
+  font-size: 24px; /* Increased font size for title */
+  margin-bottom: 30px; /* More space below the title */
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold; /* Make labels bold */
+  color: #333; /* Darker color for better readability */
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px; /* Increased padding for comfort */
+  border: 1px solid #ccc;
+  border-radius: 5px; /* Slightly larger border radius */
+  font-size: 16px; /* Increased font size for input */
+  transition: border-color 0.3s; /* Smooth transition on focus */
+}
+
+.form-input:focus {
+  border-color: #007bff; /* Blue color on focus for better UX */
+  outline: none; /* Remove default outline */
+}
+
+.login-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff; /* Bootstrap primary color */
+  color: #ffffff; /* White text for contrast */
+  border: none; /* No border */
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s; /* Smooth transition on hover */
+}
+
+.login-button:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}
+
+.signup-button {
+  padding: 10px 20px;
+  background-color: #f0f0f0; /* Light gray background */
+  color: #007bff; /* Bootstrap primary color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  transition: background-color 0.3s; /* Smooth transition on hover */
+}
+
+.signup-button:hover {
+  background-color: #e0e0e0; /* Slightly darker on hover */
+}
+
+.no-scroll {
+  overflow: hidden;
+}

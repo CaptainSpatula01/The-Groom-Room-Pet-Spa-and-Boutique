@@ -1,68 +1,101 @@
 .signup-container {
-    max-width: 1600px; /* Match max-width */
-    margin: 25px auto; /* Center horizontally and set top margin */
-    padding: 40px; /* Padding for inner space */
-    background-color: #fff; /* Background color */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Shadow effect */
-    text-align: center; /* Center text */
-  }
-  
-  h1 {
-    margin-bottom: 20px; /* Space below heading */
-  }
-  
-  .form {
-    display: flex; /* Use flexbox for the form layout */
-    flex-direction: column; /* Stack items vertically */
-    align-items: center; /* Center items */
-  }
-  
-  .form-group {
-    margin-bottom: 15px; /* Space between form groups */
-    width: 100%; /* Full width */
-  }
-  
-  label {
-    display: block; /* Block display for labels */
-    margin-bottom: 5px; /* Space below labels */
-  }
-  
-  input {
-    width: 100%; /* Full width */
-    padding: 10px; /* Padding for inputs */
-    border: 1px solid #ccc; /* Border styling */
-    border-radius: 4px; /* Rounded corners for inputs */
-  }
-  
-  .signup-button {
-    width: 100%; /* Full width for button */
-    padding: 10px; /* Padding for button */
-    background-color: #000; /* Background color */
-    color: #ffffff; /* Text color */
-    border: 1px solid #ccc; /* Border styling */
-    border-radius: 5px; /* Rounded corners for button */
-    cursor: pointer; /* Pointer cursor on hover */
-    margin-top: 10px; /* Space above button */
-  }
-  
-  .signup-button:hover {
-    background-color: #444; /* Darker background on hover */
-  }
+  max-width: 400px; /* Adjusted for a more compact layout */
+  margin: 100px auto; /* Increased top margin for space above the container */
+  padding: 40px; /* Padding for inner space */
+  background-color: #ffffff; /* Background color */
+  border-radius: 10px; /* Slightly larger border radius */
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2); /* Deeper shadow for depth */
+  text-align: center; /* Center text */
+}
 
-  .cancel-button {
-    width: 100%; /* Full width for button */
-    padding: 10px; /* Padding for button */
-    background-color: #ccc; /* Background color */
-    color: #000; /* Text color */
-    border: 1px solid #ccc; /* Border styling */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
-    margin-top: 10px; /* Space above button */
-  }
-  
-  .cancel-button:hover {
-    background-color: #bbb; /* Darker background on hover */
-  }
-  
-  
+.signup-title {
+  font-size: 24px; /* Increased font size for title */
+  margin-bottom: 30px; /* More space below the title */
+}
+
+/* The rest of your CSS remains unchanged */
+
+
+.form {
+  display: flex; /* Use flexbox for the form layout */
+  flex-direction: column; /* Stack items vertically */
+}
+
+.form-group {
+  margin-bottom: 20px; /* Space between form groups */
+  width: 100%; /* Full width */
+}
+
+label {
+  display: block; /* Block display for labels */
+  margin-bottom: 5px; /* Space below labels */
+  font-weight: bold; /* Make labels bold */
+  color: #333; /* Darker color for better readability */
+}
+
+.form-input {
+  width: 100%; /* Full width */
+  padding: 12px; /* Increased padding for comfort */
+  border: 1px solid #ccc; /* Border styling */
+  border-radius: 5px; /* Rounded corners for inputs */
+  font-size: 16px; /* Increased font size for input */
+  transition: border-color 0.3s; /* Smooth transition on focus */
+}
+
+.form-input:focus {
+  border-color: #007bff; /* Blue color on focus for better UX */
+  outline: none; /* Remove default outline */
+}
+
+.signup-button {
+  width: 100%; /* Full width for button */
+  padding: 12px; /* Padding for button */
+  background-color: #007bff; /* Bootstrap primary color */
+  color: #ffffff; /* White text for contrast */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners for button */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 16px;
+  margin-top: 10px; /* Space above button */
+  transition: background-color 0.3s; /* Smooth transition on hover */
+}
+
+.signup-button:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}
+
+.cancel-button {
+  width: 100%; /* Full width for button */
+  padding: 12px; /* Padding for button */
+  background-color: #f0f0f0; /* Light gray background */
+  color: #000; /* Text color */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 16px;
+  margin-top: 10px; /* Space above button */
+  transition: background-color 0.3s; /* Smooth transition on hover */
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0; /* Slightly darker on hover */
+}
+
+.login-button {
+  padding: 10px 20px;
+  background-color: transparent; /* Transparent background */
+  color: #007bff; /* Bootstrap primary color */
+  border: none; /* No border */
+  font-size: 16px; /* Font size for readability */
+  cursor: pointer; /* Pointer cursor on hover */
+  margin-top: 20px; /* Space above button */
+  transition: color 0.3s; /* Smooth transition on hover */
+}
+
+.login-button:hover {
+  color: #0056b3; /* Darker shade on hover */
+}
+
+.no-scroll {
+  overflow: hidden;
+}
