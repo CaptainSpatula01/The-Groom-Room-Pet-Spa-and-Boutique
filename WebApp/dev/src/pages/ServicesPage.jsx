@@ -39,7 +39,7 @@ const ServicesPage = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const response = await axios.get('api/services');
+                const response = await axios.get('http://localhost:7076/api/services');
                 const { data, hasErrors } = response.data;
 
                 if (hasErrors) {
@@ -59,9 +59,13 @@ const ServicesPage = () => {
     if (error) {
         return <div>{error}</div>; // show error
     }
+    
+    if(services.length === 0){
+        return <p>No services available.. yet.</p>
+    }
 
-  return (
-    <div className="services-container">
+    return (
+        <div className="services-container">
             <div className="services-header">
                 <h1 className="page-title">Our Services</h1>
                 <div className="services-buttons">
@@ -72,18 +76,20 @@ const ServicesPage = () => {
                             // add a modal for service post to api
                         }}
                     >
-                         Add Service
+                        Add Service
                     </Button>
-      </div>
-      <div className="service-category">
-        <h2>Medium Dogs</h2>
-        <ul>
-          {services.mediumDogs.map((service, index) => (
-            <li key={index}>{service}</li>
-          ))}
-        </ul>
-      </div>
-
+                </div>
+            </div>
+    
+            <div className="service-category">
+                <h2>Medium Dogs</h2>
+                <ul>
+                    {services.mediumDogs.map((service, index) => (
+                        <li key={index}>{service}</li>
+                    ))}
+                </ul>
+            </div>
+    
             {services.length > 0 ? (
                 <Segment inverted>
                     <Table celled inverted>
@@ -129,14 +135,14 @@ const ServicesPage = () => {
                                         </Button>
                                     </Table.Cell>
                                 </Table.Row>
-          ))}
+                            ))}
                         </Table.Body>
                     </Table>
                 </Segment>
             ) : (
                 <p>No services available</p>
             )}
-
+    
             <div className="home-button">
                 <Button
                     className="signup-button"
@@ -144,9 +150,8 @@ const ServicesPage = () => {
                 >
                     Home
                 </Button>
-      </div>
-    </div>
-  );
-};
-
+            </div>
+        </div>
+    );
+}
 export default ServicesPage;

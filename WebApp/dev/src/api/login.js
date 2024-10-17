@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5094/api/authenticate';
+const API_URL = 'http://localhost:7076/api/authenticate';
 
 export const login = async (username, password) => {
   try {
