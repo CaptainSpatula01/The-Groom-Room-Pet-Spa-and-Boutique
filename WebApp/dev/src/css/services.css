@@ -1,45 +1,53 @@
-.services-container {
-  padding: 20px;
-  align-self: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  background-color: #a19e9e; 
-  border-radius: 8px;
+html, body {
+  height: 100%; /* Ensure body takes full height */
+  margin: 0; /* Remove default margin */
+  background-color: white; /* Set background color to white */
 }
 
-  
-  .service-category {
-    margin: 20px 0;
-  }
-  
-  .service-category h2 {
-    margin-bottom: 10px;
-  }
-  
-  .service-category ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .service-category li {
-    margin: 5px 0;
-  }
-  
-  .booking-button-container {
-    margin-top: 20px;
-    text-align: center;
-  }
-  
-  .navigate-button {
-    background-color: #000;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .navigate-button:hover {
-    background-color: #fff;
-    color: #000;
-  }
-  
+.services-container {
+  padding: 20px 20px; /* Adjust padding to create space within the box */
+  align-self: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Lighter shadow */
+  background-color: #f9f9f9; /* Keep matching background color */
+  border-radius: 8px;
+  max-width: 600px; /* Reduced max width for a smaller box */
+  margin: 82px auto 0; /* Center the container with extra top margin */
+}
+
+.service-category {
+  margin: 20px 0;
+}
+
+.service-category h2 {
+  margin-bottom: 10px;
+  color: #333; /* Darker color for headers */
+}
+
+.service-category ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.booking-button-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.navigate-button {
+  background-color: #007bff; /* Blue button matching the gallery */
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s; /* Smooth transition */
+}
+
+.navigate-button:hover {
+  background-color: #0056b3; /* Darker shade for hover effect */
+  color: #fff; /* Keep text white on hover */
+}
+
+.no-scroll {
+  overflow: hidden;
+}

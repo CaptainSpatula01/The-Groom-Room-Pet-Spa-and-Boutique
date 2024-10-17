@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../css/services.css';
 
@@ -26,6 +26,16 @@ const ServicesPage = () => {
       'Grooming',
     ],
   };
+
+  useEffect(() => {
+    // Disable scrolling by adding class
+    document.body.classList.add('no-scroll');
+
+    // Cleanup function to remove class on unmount
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
+  }, []);
 
   return (
     <div className="services-container">
