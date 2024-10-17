@@ -53,7 +53,7 @@ function Homepage() {
     }
 
     try {
-      const response = await fetch('http://localhost:5094/api/get-current-user', {
+      const response = await fetch('https://localhost:7076/api/get-current-user', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

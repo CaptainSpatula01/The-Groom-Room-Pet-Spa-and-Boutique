@@ -11,18 +11,14 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
+// Add services to the container.
+services.AddControllers();
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(connectionString));
 
-services.AddIdentity<User, Role>(options =>
-{
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 6;
-})
+services.AddIdentity<User, Role>()
 .AddEntityFrameworkStores<DataContext>()
 .AddDefaultTokenProviders();
 
@@ -50,23 +46,6 @@ services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 });
-
-services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend",
-        builder => builder
-            .WithOrigins("http://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials());
-});
-
-// Add services to the container.
-services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-    });
 
 services.AddEndpointsApiExplorer();
 
@@ -101,6 +80,16 @@ services.AddSwaggerGen(c =>
     });
 });
 
+services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        builder => builder
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+});
+
 services.AddScoped<DataContext>();
 
 var app = builder.Build();
@@ -133,8 +122,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

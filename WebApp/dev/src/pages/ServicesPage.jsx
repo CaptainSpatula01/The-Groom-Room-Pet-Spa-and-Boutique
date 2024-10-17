@@ -39,7 +39,7 @@ const ServicesPage = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const response = await axios.get('http://localhost:7076/api/services');
+                const response = await axios.get('https://localhost:7076/api/services');
                 const { data, hasErrors } = response.data;
 
                 if (hasErrors) {

@@ -38,13 +38,8 @@ namespace groomroom.Controllers
         }
 
         [HttpPost]
-        public ActionResult<ServiceDto> CreateService(ServiceDto dto)
+        public ActionResult<ServiceCreateDto> CreateService(ServiceCreateDto dto)
         {
-            if (IsInvalid(dto))
-            {
-                return BadRequest();
-            }
-
             var service = new Service
             {
                 Price = dto.Price,
@@ -61,12 +56,8 @@ namespace groomroom.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public ActionResult<ServiceDto> UpdateService(int id, ServiceDto dto)
+        public ActionResult<ServiceUpdateDto> UpdateService(int id, ServiceUpdateDto dto)
         {
-            if (IsInvalid(dto))
-            {
-                return BadRequest();
-            }
 
             var service = services.FirstOrDefault(x => x.Id == id);
             if (service == null)
@@ -99,11 +90,6 @@ namespace groomroom.Controllers
             dataContext.SaveChanges();
 
             return Ok();
-        }
-
-        private static bool IsInvalid(ServiceDto dto)
-        {
-            return dto.Price <= 0 || string.IsNullOrWhiteSpace(dto.Description) || dto.Description.Length > 500;
         }
 
         private static IQueryable<ServiceDto> GetServiceDtos(IQueryable<Service> services)

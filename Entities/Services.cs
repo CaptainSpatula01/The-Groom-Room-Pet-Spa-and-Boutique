@@ -16,6 +16,20 @@ namespace groomroom.Entities
         public required string Description { get; set; }
     }
 
+    public class ServiceCreateDto
+    {
+        public int Id { get; set; }
+        public decimal Price { get; set; }
+        public required string Description { get; set; }
+    }
+
+    public class ServiceUpdateDto
+    {
+        public int Id { get; set; }
+        public decimal Price { get; set; }
+        public required string Description { get; set; }
+    }
+
     public class ServiceEntityConfiguration : IEntityTypeConfiguration<Service>
     {
         public void Configure(EntityTypeBuilder<Service> builder)
