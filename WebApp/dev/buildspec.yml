@@ -1,0 +1,29 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20 # or the version you are using
+    commands:
+      - echo Installing npm dependencies...
+      - npm install
+
+  pre_build:
+    commands:
+      - echo Running pre-build commands...
+      # You can add any pre-build commands here if needed
+
+  build:
+    commands:
+      - echo Building the project...
+      - npm run build
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      # You can add any post-build commands here if needed
+
+artifacts:
+  files:
+    - '**/*'  # Include all files in the project directory
+
