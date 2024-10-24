@@ -2,8 +2,8 @@
     text-align: center;
     padding: 50px; /* Padding inside the container */
     max-width: 400px;
-    margin: 50px auto; /* Increased margin for top and bottom spacing */
-    background-color: #f9f9f9;
+    margin: 100px auto; /* Increased margin for top and bottom spacing */
+    background-color: rgba(197, 173, 153); /* This is the book now color from the old website! */
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   }
@@ -22,6 +22,7 @@
   }
   
   .gallery {
+  
     position: relative;
     margin-bottom: 20px; /* Space below the image */
   }
@@ -62,5 +63,9 @@
   }
   
   .no-scroll {
+    background-image: url('../assets/paw-print.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     overflow: hidden;
   }
