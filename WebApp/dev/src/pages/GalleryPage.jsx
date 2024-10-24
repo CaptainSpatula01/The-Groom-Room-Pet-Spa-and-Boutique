@@ -56,7 +56,7 @@ const Gallerypage = () => {
           <button onClick={nextImage} className="button">❯</button>
         </div>
       </div>
-    </div>
+      </div>
     </body>
   );
 };

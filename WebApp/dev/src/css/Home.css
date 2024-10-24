@@ -1,69 +1,152 @@
+/* General Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: rgba(197, 173, 153); /* This is the book now color from the old website! */
+  color: #333;
+}
+
+.logo img {
+  height: 50px; /* Logo size */
+}
+
+.nav-links a:hover {
+  color: #ffd700; /* Gold color on hover */
+}
+
+.login {
+  display: flex;
+  gap: 10px;
+}
+
+.login-button,
+.signup-button,
+.logout-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.login-button {
+  background-color: #007BFF; /* Blue */
+  color: white;
+}
+
+.signup-button {
+  background-color: #28A745; /* Green */
+  color: white;
+}
+
+.logout-button {
+  background-color: #DC3545; /* Red */
+  color: white;
+}
+
+.login-button:hover {
+  background-color: #0056b3; /* Darker blue */
+}
+
+.signup-button:hover {
+  background-color: #218838; /* Darker green */
+}
+
+.logout-button:hover {
+  background-color: #c82333; /* Darker red */
+}
+
+/* Main Content */
+main {
+  padding: 20px;
+}
+
+.home-container {
+  text-align: center;
+  padding: 20px;
+}
+
 .hero-image {
-    background-size: cover;
-    background-position: center;
-    height: 300px; /* Adjust height as needed */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: white;
-    padding: 25px;
-    position: relative;
-  }
+  background-image: url('../assets/home-hero-picture.png'); /* Background image for hero section */
+  background-size: cover;
+  background-position: center;
+  padding: 100px 20px;
+  color: #fff;
+}
+
+.hero-image h1 {
+  font-size: 3rem;
+  margin: 0;
+}
+
+.hero-image p {
+  font-size: 1.5rem;
+  margin: 10px 0;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 15px 30px;
+  background-color: #FFA500; /* Orange */
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+  background-color: #e68a00; /* Darker orange */
+}
+
+.about-us-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.about-us {
+  max-width: 600px;
+  margin-bottom: 30px;
+}
+
+.about-us h2 {
+  color: #4A8E4A; /* Same green as navbar */
   
+}
+
+.logo-container img {
+  height: 250px; /* Logo size in about section */
+}
+
+.contact-container {
+  background-color: #e3f2fd; /* Light blue for contact section */
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+}
+
+.contact-info {
+  font-size: 1.2rem;
+}
+
+.contact-info p {
+  margin: 5px 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+
   .hero-image h1 {
-    font-size: 2.5em;
-    margin: 0;
+    font-size: 2rem;
   }
-  
+
   .hero-image p {
-    font-size: 1.2em;
-    margin: 10px 0;
+    font-size: 1.2rem;
   }
-  
-  .cta-button {
-    background-color: #007bff; /* A warm, inviting yellow */
-    color: #000;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    text-decoration: none;
-    transition: background-color 0.3s, transform 0.3s;
-  }
-  
-  .cta-button:hover {
-    background-color: #002fff; /* Darken the yellow on hover */
-    transform: scale(1.05);
-    color: #fff;
-  }
-  
-  .about-us-container {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 20px;
-    border: 1px solid #ccc; /* Keep the border for separation */
-    border-radius: 8px; 
-    background-color: #fff; 
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
-  }
-  
+
   .contact-info {
-    display: inline-block; 
+    font-size: 1rem;
   }
-  
-  .contact-info p {
-    justify-content: center;
-    margin: 15px;
-    font-size: 1.1em; /* Slightly larger text for contact info */
-  }
-
-  .login-button {
-    margin-right: 20px;
-  }
-
-  .signup-button {
-    margin-left: 20px;
-  }
+}
