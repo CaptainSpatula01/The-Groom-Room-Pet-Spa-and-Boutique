@@ -20,7 +20,7 @@ const SignupPage = () => {
 
     // Cleanup function to remove class on unmount
     return () => {
-        document.body.classList.remove('no-scroll');
+      document.body.classList.remove('no-scroll');
     };
   }, []);
 
@@ -62,64 +62,77 @@ const SignupPage = () => {
 
   return (
     <div className="signup-container">
-      <h1 className="signup-title">Create Your Account Here!</h1>
-      {userMessage && <p>{userMessage}</p>}
-      <form onSubmit={handleSubmit} className="form">
-        <div className="form-group">
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="firstName">First Name</label>
-          <input
-            type="text"
-            id="firstName"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="lastName">Last Name</label>
-          <input
-            type="text"
-            id="lastName"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        {error && <p className="error">{error}</p>}
-        <button type="submit" className="signup-button">Sign Up</button>
-        <button type="button" className="cancel-button" onClick={handleCancel}>Cancel</button>
-      </form>
-      <button className="login-button" onClick={handleLoginRedirect}>Already have an account? Log In</button>
+      <div className="signup-box"> {/* Combined container for title and form */}
+        <h1 className="signup-title">Create Your Account Here!</h1>
+        {userMessage && <p>{userMessage}</p>}
+        
+        <form onSubmit={handleSubmit} className="form">
+  <div className="form-group">
+    <label htmlFor="username">Username</label>
+    <input
+      type="text"
+      id="username"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+      required
+      className="form-input"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor="firstName">First Name</label>
+    <input
+      type="text"
+      id="firstName"
+      value={firstName}
+      onChange={(e) => setFirstName(e.target.value)}
+      required
+      className="form-input"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor="lastName">Last Name</label>
+    <input
+      type="text"
+      id="lastName"
+      value={lastName}
+      onChange={(e) => setLastName(e.target.value)}
+      required
+      className="form-input"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor="email">Email</label>
+    <input
+      type="email"
+      id="email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      required
+      className="form-input"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor="password">Password</label>
+    <input
+      type="password"
+      id="password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      required
+      className="form-input"
+    />
+  </div>
+  {error && <p className="error">{error}</p>}
+
+  {/* Buttons container for proper alignment */}
+  <div className="buttons-container">
+    <button type="submit" className="signup-button">Sign Up</button>
+    <button type="button" className="cancel-button" onClick={handleCancel}>Cancel</button>
+  </div>
+</form>
+
+        <button className="login-button" onClick={handleLoginRedirect}>Already have an account? Log In</button>
+      </div>
     </div>
   );
 };

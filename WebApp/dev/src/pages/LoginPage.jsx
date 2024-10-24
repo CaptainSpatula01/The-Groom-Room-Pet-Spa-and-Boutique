@@ -12,9 +12,8 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Disable scrolling by adding class
     document.body.classList.add('no-scroll');
-
+    
     const token = localStorage.getItem('token');
     if (token) {
       setRedirectMessage('You are already logged in. Redirecting to the home page...');
@@ -51,8 +50,10 @@ const LoginPage = () => {
 
   return (
     <div className="login-container">
+    <div className="login-box"> {/* Combined container for title and form */}
       <h1 className="login-title">Ready for that Spa Day?</h1>
       {redirectMessage && <p className="redirect-message">{redirectMessage}</p>}
+      
       <form onSubmit={handleSubmit} className="form">
         <div className="form-group">
           <label htmlFor="username">Username</label>
@@ -62,6 +63,7 @@ const LoginPage = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
+            className="form-input"
           />
         </div>
         <div className="form-group">
@@ -72,14 +74,20 @@ const LoginPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="form-input"
           />
         </div>
+        
         {error && <p className="error">{error}</p>}
         {userMessage && <p>{userMessage}</p>}
-        <button type="submit" className="login-button">Log In</button>
+        
+        <div className="buttons-container">
+          <button type="submit" className="login-button">Log In</button>
+          <button type="button" className="signup-button" onClick={handleSignUp}>Create Account</button>
+        </div>
       </form>
-      <button className="signup-button" onClick={handleSignUp}>Create Account</button>
     </div>
+  </div>
   );
 };
 

@@ -8,26 +8,30 @@ import AddPetPage from './pages/AddPetPage';
 import ServicesPage from './pages/ServicesPage';
 import Gallerypage from './pages/GalleryPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import Navbar from './components/Navbar';  // Import your Navbar component
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="/" element={<Homepage />} />
-      <Route path="/gallery" element={<Gallerypage />} />
-      <Route path="/services" element={<ServicesPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
-      <Route path="/user" element={<UserPage />} />
-      <Route path="/add-pet" element={<AddPetPage />} />
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute>
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+    <>
+      <Navbar /> {/* Navbar stays across pages */}
+      <Routes>
+        <Route path="/" element={<Homepage />} />
+        <Route path="/gallery" element={<Gallerypage />} />
+        <Route path="/services" element={<ServicesPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/user" element={<UserPage />} />
+        <Route path="/add-pet" element={<AddPetPage />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </>
   );
 };
 
