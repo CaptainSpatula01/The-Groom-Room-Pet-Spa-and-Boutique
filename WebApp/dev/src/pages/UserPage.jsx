@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Segment, Table } from 'semantic-ui-react';
+import { Button } from 'semantic-ui-react';
 import '../css/User.css';
 
 const UserPage = () => {
@@ -86,42 +86,41 @@ const UserPage = () => {
   }
 
   return (
-    <div>
+    <div className="user-page-container">
       <Link to="/">
         <Button className="homepage-button">Return to Homepage</Button>
       </Link>
-        <h2>User Details</h2>
+      
+      <h2>User Details</h2>
+      
+      <div className="user-info">
         <p>Username: {currentUser.userName}</p>
         <p>First Name: {currentUser.firstName}</p>
         <p>Last Name: {currentUser.lastName}</p>
         <p>Email: {currentUser.email}</p>
-        {currentUser.pets && currentUser.pets.length > 0 ? (
-            <div>
-                <h3>Your Dogs:</h3>
-                <ul>
-                    {currentUser.pets.map((pet) => (
-                        <li key={pet.id}>
-                            <p>Name: {pet.name}</p>
-                            <p>Breed: {pet.breed}</p>
-                            <p>Size: {pet.size}</p>
-                            <Button className="remove-button" onClick={() => handleRemovePet(pet.id)}>Remove Pet</Button>
-                        </li>
-                    ))}
-                </ul>
+      </div>
+
+      {currentUser.pets && currentUser.pets.length > 0 ? (
+        <div className="pets-container">
+          <h3>Your Dogs:</h3>
+          {currentUser.pets.map((pet) => (
+            <div key={pet.id} className="pet-item">
+              <p>Name: {pet.name}</p>
+              <p>Breed: {pet.breed}</p>
+              <p>Size: {pet.size}</p>
+              <Button className="remove-button" onClick={() => handleRemovePet(pet.id)}>
+                Remove Pet
+              </Button>
             </div>
-        ) : (
-            <p>No dogs added yet.</p>
-        )}
+          ))}
+        </div>
+      ) : (
+        <p>No dogs added yet.</p>
+      )}
 
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-
-        <Link to="/add-pet">
-            <Button className="add-button">Add a Pet</Button>
-        </Link>
+      <Link to="/add-pet">
+        <Button className="add-button">Add a Pet</Button>
+      </Link>
     </div>
   );
 };

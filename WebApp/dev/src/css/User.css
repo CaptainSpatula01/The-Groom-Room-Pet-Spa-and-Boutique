@@ -1,13 +1,105 @@
-.homepage-button {
+/* General Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+  }
+  
+  /* Main container */
+  .user-page-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Heading */
+  .user-page-container h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+  
+  /* User Info Styling */
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 30px;
+  }
+  
+  .user-info p {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+  
+  /* Pets Section */
+  .pets-container {
+    margin-bottom: 30px;
+  }
+  
+  .pets-container h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  .pet-item {
+    background-color: #fafafa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .pet-item p {
+    margin: 5px 0;
+  }
+  
+  /* Buttons Styling */
+  button {
+    cursor: pointer;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .homepage-button, .add-button {
     width: 100%;
     text-align: center;
-}
-
-.remove-button {
-    background-color: red;
-}
-
-.add-button {
-    background-color: rgb(59, 177, 203);
+    background-color: #3bb1cb;
     color: white;
-}
+    margin-bottom: 20px;
+  }
+  
+  .homepage-button:hover, .add-button:hover {
+    background-color: #349da7;
+  }
+  
+  .remove-button {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  .remove-button:hover {
+    background-color: #c0392b;
+  }
+  
+  /* Media Queries for Responsiveness */
+  @media (max-width: 600px) {
+    .user-page-container {
+      padding: 10px;
+    }
+  
+    .pets-container h3 {
+      font-size: 1.3rem;
+    }
+  
+    .user-info p {
+      font-size: 1rem;
+    }
+  }
+  

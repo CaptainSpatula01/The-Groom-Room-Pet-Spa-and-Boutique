@@ -9,7 +9,7 @@ import UserPage from './UserPage';
 import AddPetPage from './AddPetPage';
 import AdminDashboard from './AdminDashboard';
 import logo from "../assets/logo.png";
-import '../css/App.css';
+import '../css/Home.css';
 
 function Homepage() {
   const [userMessage, setUserMessage] = useState('');
