@@ -1,29 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../css/SignUp.css'; // Ensure this CSS file contains the necessary styles
+import { signUp } from '../api/signup';
+import '../css/SignUp.css';
+import { login } from '../api/login';
 
-const SignUpPage = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: ''
-  });
-  
+const SignupPage = () => {
+  const [username, setUsername] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [userMessage, setUserMessage] = useState('');
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
+  useEffect(() => {
+    // Disable scrolling by adding class
+    document.body.classList.add('no-scroll');
 
-  const handleSubmit = (e) => {
+    // Cleanup function to remove class on unmount
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Handle sign-up logic here (e.g., API call)
-    navigate('/'); // Redirect after submission
+
+    try {
+      const newUser = {
+        username,
+        firstName,
+        lastName,
+        email,
+        password,
+      };
+
+      const signUpResponse = await signUp(newUser);
+      setUserMessage(`Successfully signed up as: ${signUpResponse.data.username}`);
+      
+      const loginResponse = await login(username, password);
+      localStorage.setItem('token', loginResponse.data.token);
+      localStorage.setItem('user', JSON.stringify(loginResponse.data.username));
+      
+      setError(null);
+      navigate('/user');
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Sign up failed. Please try again.';
+      setUserMessage(errorMessage);
+      setError(errorMessage);
+    }
   };
 
   const handleLoginRedirect = () => {
@@ -31,52 +57,84 @@ const SignUpPage = () => {
   };
 
   const handleCancel = () => {
-    navigate('/login'); // Navigate to home or another appropriate page
+    navigate('/login'); // Navigate to another appropriate page
   };
 
   return (
     <div className="signup-container">
-      <h1>Sign Up</h1>
-      <form onSubmit={handleSubmit} className="form">
-        <div className="form-group">
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit" className="signup-button">Sign Up</button>
-        <button type="button" className="cancel-button" onClick={handleCancel}>Cancel</button>
-      </form>
-      <button className="login-button" onClick={handleLoginRedirect}>Already have an account? Log In</button>
+      <div className="signup-box"> {/* Combined container for title and form */}
+        <h1 className="signup-title">Create Your Account Here!</h1>
+        {userMessage && <p>{userMessage}</p>}
+        
+        <form onSubmit={handleSubmit} className="form">
+  <div className="form-group">
+    <label htmlFor="username">Username</label>
+    <input
+      type="text"
+      id="username"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+      required
+      className="form-input"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor="firstName">First Name</label>
+    <input
+      type="text"
+      id="firstName"
+      value={firstName}
+      onChange={(e) => setFirstName(e.target.value)}
+      required
+      className="form-input"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor="lastName">Last Name</label>
+    <input
+      type="text"
+      id="lastName"
+      value={lastName}
+      onChange={(e) => setLastName(e.target.value)}
+      required
+      className="form-input"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor="email">Email</label>
+    <input
+      type="email"
+      id="email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      required
+      className="form-input"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor="password">Password</label>
+    <input
+      type="password"
+      id="password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      required
+      className="form-input"
+    />
+  </div>
+  {error && <p className="error">{error}</p>}
+
+  {/* Buttons container for proper alignment */}
+  <div className="buttons-container">
+    <button type="submit" className="signup-button">Sign Up</button>
+    <button type="button" className="cancel-button" onClick={handleCancel}>Cancel</button>
+  </div>
+</form>
+
+        <button className="login-button" onClick={handleLoginRedirect}>Already have an account? Log In</button>
+      </div>
     </div>
   );
 };
 
-export default SignUpPage;
+export default SignupPage;

@@ -1,9 +1,14 @@
-﻿using groomroom.Common;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using groomroom.Common;
 using groomroom.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace groomroom.Controllers;
 
@@ -22,12 +27,11 @@ public class AuthenticationController : ControllerBase
         _signInManager = signInManager;
     }
 
-    [AllowAnonymous]
     [HttpPost("authenticate")]
+    [AllowAnonymous]
     public async Task<IActionResult> Authenticate([FromBody] LoginDto dto)
     {
         var response = new Response();
-
         var user = await _userManager.FindByNameAsync(dto.UserName ?? "");
 
         if (user == null)
@@ -48,29 +52,7 @@ public class AuthenticationController : ControllerBase
             return BadRequest(response);
         }
 
-        response.Data = result.Succeeded;
-        return Ok(response);
-    }
-
-    [HttpPost("logout")]
-    public async Task<IActionResult> Logout()
-    {
-        await _signInManager.SignOutAsync();
-        return Ok();
-    }
-
-    [Authorize]
-    [HttpGet("get-current-user")]
-    public async Task<IActionResult> GetLoggedInUser()
-    {
-        var response = new Response();
-        var user = await _userManager.GetUserAsync(HttpContext.User);
-
-        if (user == null)
-        {
-            response.AddError(string.Empty, "There was an issue getting the logged-in user.");
-            return NotFound(response);
-        }
+        var token = GenerateJwtToken(user);
 
         var userGetDto = new UserGetDto
         {
@@ -79,7 +61,7 @@ public class AuthenticationController : ControllerBase
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
-            UserRoles = user.UserRoles.Select(ur => ur.Role.Name).ToList(), // Extract role names
+            UserRoles = user.UserRoles.Select(ur => ur.Role.Name).ToList(),
             Pets = user.Pets.Select(p => new Pets
             {
                 Id = p.Id,
@@ -89,9 +71,108 @@ public class AuthenticationController : ControllerBase
             }).ToList()
         };
 
-        response.Data = userGetDto;
+        response.Data = new
+        {
+            username = userGetDto.UserName,
+            token,
+            data = true,
+        };
 
         return Ok(response);
+    }
+
+    private string GenerateJwtToken(User user)
+        {
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iss, "YourIssuer"),
+                new Claim(JwtRegisteredClaimNames.Aud, "YourAudience"),
+                new Claim("UserId", user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ThisIsSuperSecretLongKeyPleaseFuckingWorkForTheLoveOfGod"));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: "YourIssuer",
+                audience: "YourAudience",
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(60),
+                signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return Ok();
+    }
+
+    [HttpGet("get-current-user")]
+    [Authorize]
+    public async Task<IActionResult> GetLoggedInUser()
+    {
+        var userIdClaim = User.FindFirstValue("UserId");
+
+        if (string.IsNullOrEmpty(userIdClaim))
+        {
+            return BadRequest(new
+            {
+                data = (object)null,
+                errors = new[] { new { property = "", message = "User Id not found in claims." } },
+                hasErrors = true
+            });
+        }
+
+        if (!int.TryParse(userIdClaim, out int userId))
+        {
+            return BadRequest(new
+            {
+                data = (object)null,
+                errors = new[] { new { property = "", message = "User Id is not a valid integer." } },
+                hasErrors = true
+            });
+        }
+
+        var user = await _userManager.Users
+            .Include(u => u.Pets)
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+        {
+            return NotFound(new
+            {
+                data = (object)null,
+                errors = new[] { new { property = "", message = "User not found." } },
+                hasErrors = true
+            });
+        }
+
+        var userGetDto = new UserGetDto
+        {
+            Id = user.Id,
+            UserName = user.UserName,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            UserRoles = user.UserRoles.Select(ur => ur.Role.Name).ToList(),
+            Pets = user.Pets.Select(p => new Pets
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Breed = p.Breed,
+                Size = p.Size
+            }).ToList()
+        };
+
+        return Ok(new { data = userGetDto });
     }
 }
 

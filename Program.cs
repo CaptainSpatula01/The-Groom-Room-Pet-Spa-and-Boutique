@@ -2,23 +2,18 @@ using System.Text;
 using groomroom.Data;
 using groomroom.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Writers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using groomroom.Configurations;
+using System.Security.Cryptography;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
 // Add services to the container.
-services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-    });
+services.AddControllers();
 
 services.AddDbContext<DataContext>(options => 
     options.UseSqlServer(
@@ -30,6 +25,34 @@ services.AddDbContext<DataContext>(options =>
 services.AddIdentity<User, Role>()
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();
+
+var jwtSection = builder.Configuration.GetSection("Jwt");
+services.Configure<JwtSettings>(jwtSection);
+
+var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+
+services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(cfg =>
+{
+    cfg.TokenValidationParameters = new TokenValidationParameters
+    {
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ThisIsSuperSecretLongKeyPleaseFuckingWorkForTheLoveOfGod")),
+        ValidateIssuerSigningKey = true,
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidIssuer = "YourIssuer",
+        ValidAudience = "YourAudience",
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+services.AddAuthorization();
+services.AddAuthentication();
 
 services.AddEndpointsApiExplorer(); 
 
@@ -64,6 +87,15 @@ services.AddSwaggerGen(c =>
     });
 });
 
+services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 services.AddScoped<DataContext>();
 
 var app = builder.Build();
@@ -96,6 +128,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

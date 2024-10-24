@@ -1,0 +1,68 @@
+.signup-container {
+    max-width: 1600px; /* Match max-width */
+    margin: 25px auto; /* Center horizontally and set top margin */
+    padding: 40px; /* Padding for inner space */
+    background-color: #fff; /* Background color */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    text-align: center; /* Center text */
+  }
+  
+  h1 {
+    margin-bottom: 20px; /* Space below heading */
+  }
+  
+  .form {
+    display: flex; /* Use flexbox for the form layout */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items */
+  }
+  
+  .form-group {
+    margin-bottom: 15px; /* Space between form groups */
+    width: 100%; /* Full width */
+  }
+  
+  label {
+    display: block; /* Block display for labels */
+    margin-bottom: 5px; /* Space below labels */
+  }
+  
+  input {
+    width: 100%; /* Full width */
+    padding: 10px; /* Padding for inputs */
+    border: 1px solid #ccc; /* Border styling */
+    border-radius: 4px; /* Rounded corners for inputs */
+  }
+  
+  .signup-button {
+    width: 100%; /* Full width for button */
+    padding: 10px; /* Padding for button */
+    background-color: #000; /* Background color */
+    color: #ffffff; /* Text color */
+    border: 1px solid #ccc; /* Border styling */
+    border-radius: 5px; /* Rounded corners for button */
+    cursor: pointer; /* Pointer cursor on hover */
+    margin-top: 10px; /* Space above button */
+  }
+  
+  .signup-button:hover {
+    background-color: #444; /* Darker background on hover */
+  }
+
+  .cancel-button {
+    width: 100%; /* Full width for button */
+    padding: 10px; /* Padding for button */
+    background-color: #ccc; /* Background color */
+    color: #000; /* Text color */
+    border: 1px solid #ccc; /* Border styling */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    margin-top: 10px; /* Space above button */
+  }
+  
+  .cancel-button:hover {
+    background-color: #bbb; /* Darker background on hover */
+  }
+  
+  

@@ -14,11 +14,9 @@ namespace groomroom.Entities
     }
     public class PetDto
     {
-        public int Id { get; set; }
         public required string Name { get; set; }
         public required string Breed { get; set; }
         public int Size { get; set; }
-        public int UserId { get; set; }
     }
 
     public class PetEntityConfiguration : IEntityTypeConfiguration<Pets>
