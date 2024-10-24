@@ -3,16 +3,25 @@ body {
   font-family: 'Arial', sans-serif;
   margin: 0;
   padding: 0;
-  background-color: rgba(197, 173, 153); /* This is the book now color from the old website! */
+  background-color: rgba(197, 173, 153, 0.8); /* Added slight transparency for a softer feel */
   color: #333;
+  line-height: 1.6; /* Improved readability with better line spacing */
 }
 
 .logo img {
-  height: 50px; /* Logo size */
+  height: 60px; /* Slightly increased logo size for better visibility */
+}
+
+.nav-links a {
+  text-decoration: none; /* Removed underline for cleaner look */
+  color: #333;
+  font-weight: bold;
+  padding: 10px;
+  transition: color 0.3s ease;
 }
 
 .nav-links a:hover {
-  color: #ffd700; /* Gold color on hover */
+  color: #ffd700; /* Consistent gold color for hover */
 }
 
 .login {
@@ -23,11 +32,12 @@ body {
 .login-button,
 .signup-button,
 .logout-button {
-  padding: 10px 15px;
+  padding: 12px 20px; /* Increased padding for a more clickable feel */
   border: none;
-  border-radius: 5px;
+  border-radius: 30px; /* Softer rounded corners */
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 1rem; /* Larger, more readable text */
 }
 
 .login-button {
@@ -68,85 +78,118 @@ main {
 }
 
 .hero-image {
-  background-image: url('../assets/home-hero-picture.png'); /* Background image for hero section */
+  background-image: url('../assets/home-hero-picture.png');
   background-size: cover;
   background-position: center;
   padding: 100px 20px;
   color: #fff;
+  position: relative;
+}
+
+.hero-image::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Dark overlay for better text visibility */
+  z-index: 1;
+}
+
+.hero-image h1,
+.hero-image p {
+  position: relative;
+  z-index: 2;
 }
 
 .hero-image h1 {
-  font-size: 3rem;
+  font-size: 3.5rem; /* Larger heading for a bold statement */
   margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Subtle shadow for better readability */
 }
 
 .hero-image p {
-  font-size: 1.5rem;
-  margin: 10px 0;
+  font-size: 1.8rem; /* Larger subtitle */
+  margin: 20px 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); /* Subtle shadow for readability */
 }
 
 .cta-button {
   display: inline-block;
-  padding: 15px 30px;
+  padding: 15px 35px; /* More padding for emphasis */
   background-color: #FFA500; /* Orange */
   color: white;
-  border-radius: 5px;
+  border-radius: 30px; /* Softer, rounded corners */
   text-decoration: none;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  position: relative; /* Ensure it's positioned above the overlay */
+  z-index: 3; /* Higher than the overlay */
 }
 
 .cta-button:hover {
   background-color: #e68a00; /* Darker orange */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Add subtle shadow on hover for emphasis */
 }
 
+/* About Us Section */
 .about-us-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 20px;
+  padding: 50px 20px;
+  background-color: #fafafa; /* Light background for a calm, inviting section */
 }
 
 .about-us {
-  max-width: 600px;
-  margin-bottom: 30px;
+  max-width: 700px; /* Increased width for better content fit */
+  text-align: center;
+  margin-bottom: 40px;
 }
 
 .about-us h2 {
   color: #4A8E4A; /* Same green as navbar */
-  
+  font-size: 2.5rem; /* Larger, welcoming title */
+  margin-bottom: 20px;
 }
 
 .logo-container img {
   height: 250px; /* Logo size in about section */
 }
 
+/* Contact Section */
 .contact-container {
   background-color: #e3f2fd; /* Light blue for contact section */
-  padding: 20px;
-  border-radius: 10px;
-  margin: 20px 0;
+  padding: 30px; /* Increased padding for spacious layout */
+  border-radius: 15px; /* Softer rounded corners */
+  margin: 30px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
 }
 
 .contact-info {
-  font-size: 1.2rem;
+  font-size: 1.3rem; /* Slightly larger font for readability */
 }
 
 .contact-info p {
-  margin: 5px 0;
+  margin: 8px 0; /* More spacing for better clarity */
 }
 
 /* Responsive Styles */
 @media (max-width: 768px) {
 
   .hero-image h1 {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
 
   .hero-image p {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+  }
+
+  .cta-button {
+    padding: 12px 25px;
   }
 
   .contact-info {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 }
